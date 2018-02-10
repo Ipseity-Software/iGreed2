@@ -9,6 +9,9 @@
 #import "GameView.h"
 #include "../Include/coord_list.h"
 
+NSUInteger XSIZE;
+NSUInteger YSIZE;
+
 @interface GameView ()
 @property (weak, nonatomic) IBOutlet UITextView *textView_gameBoard;
 @property (weak, nonatomic) IBOutlet UIButton *button_moveW;
@@ -29,7 +32,7 @@
 
 @implementation GameView
 
-char map[XSIZE][YSIZE];
+char **map;
 NSUInteger player_x, player_y;
 NSUInteger player_level, player_level_removed, player_level_cleared, player_points;
 BOOL highlightPaths = NO;

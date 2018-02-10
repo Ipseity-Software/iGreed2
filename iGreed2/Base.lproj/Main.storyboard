@@ -6,6 +6,8 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -23,10 +25,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EeF-5b-u4Z">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EeF-5b-u4Z">
                                 <rect key="frame" x="16" y="507" width="105" height="41"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="1" green="0.630785135" blue="0.26186151000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="41" id="E3f-La-Xpk"/>
+                                    <constraint firstAttribute="width" constant="105" id="wNH-DA-AW8"/>
+                                </constraints>
                                 <state key="normal" title="Start Game">
                                     <color key="titleColor" red="0.062622403258890347" green="0.098285364205397241" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
@@ -34,25 +39,25 @@
                                     <action selector="button_StartGame_upin:" destination="BYZ-38-t0r" eventType="touchUpInside" id="bv9-XX-WYP"/>
                                 </connections>
                             </button>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NKB-gq-pcF">
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NKB-gq-pcF">
                                 <rect key="frame" x="16" y="72" width="288" height="427"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.3857151493" green="0.29703393420000002" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <mutableString key="text">How to play: The game is played on a grid of numbers, you move your player with direction controls at the bottom of the screen. There are three simple rules to understanding this game  1. When your player moves onto a square, it will continue moving for that many squares 2. Your player may only visit each square one time (you can't go backwards) 3. When you run out of moves to make, the round is over. If you haven't cleared enough of the board, the game ends.  Your score is the percentage of squares that your player has visited. You earn points for each move. You will earn a bonus for taking riskier moves. Once you reach a certain score, you may level up by pressing the green button twice. Levels get harder as you go.  You may turn a switch on to see your available moves if you wish (but that would be cheating)  This game is an open source port of the linux game Greed written by Ethan Laur (@phyrrus9). Feel free to modify and improve it. Licensed under GPL.</mutableString>
                                 <color key="textColor" red="1" green="0.630785135" blue="0.26186151000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="iGreed 2" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ldf-fZ-9ah">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="iGreed 2" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ldf-fZ-9ah">
                                 <rect key="frame" x="103" y="32" width="115" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="dkh-UA-4GY"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gEx-m4-Dby">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gEx-m4-Dby">
                                 <rect key="frame" x="199" y="507" width="105" height="41"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="1" green="0.630785135" blue="0.26186151000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <state key="normal" title="High Scores">
                                     <color key="titleColor" red="0.062622403260000001" green="0.098285364210000004" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -63,6 +68,21 @@
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.38571514931086504" green="0.29703393424774371" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="NKB-gq-pcF" firstAttribute="leading" secondItem="EeF-5b-u4Z" secondAttribute="leading" id="97B-Hn-cqa"/>
+                            <constraint firstItem="NKB-gq-pcF" firstAttribute="trailing" secondItem="gEx-m4-Dby" secondAttribute="trailing" id="ABZ-Ha-StF"/>
+                            <constraint firstItem="NKB-gq-pcF" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="DSn-n2-IID"/>
+                            <constraint firstItem="gEx-m4-Dby" firstAttribute="leading" secondItem="EeF-5b-u4Z" secondAttribute="trailing" constant="78" id="NHW-cS-EE4"/>
+                            <constraint firstItem="EeF-5b-u4Z" firstAttribute="baseline" secondItem="gEx-m4-Dby" secondAttribute="firstBaseline" id="Od0-di-cOR"/>
+                            <constraint firstItem="ldf-fZ-9ah" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="12" id="Tme-3O-pOd"/>
+                            <constraint firstItem="EeF-5b-u4Z" firstAttribute="top" secondItem="NKB-gq-pcF" secondAttribute="bottom" constant="8" symbolic="YES" id="UdX-wA-YL0"/>
+                            <constraint firstItem="ldf-fZ-9ah" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="103" id="WA0-kj-sKS"/>
+                            <constraint firstAttribute="bottom" secondItem="EeF-5b-u4Z" secondAttribute="bottom" constant="20" symbolic="YES" id="efb-Tt-hu0"/>
+                            <constraint firstItem="NKB-gq-pcF" firstAttribute="top" secondItem="ldf-fZ-9ah" secondAttribute="bottom" constant="19" id="meW-sA-j1Y"/>
+                            <constraint firstItem="EeF-5b-u4Z" firstAttribute="top" secondItem="gEx-m4-Dby" secondAttribute="top" id="tqI-aV-f0j"/>
+                            <constraint firstItem="NKB-gq-pcF" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="u1x-0Q-1L8"/>
+                            <constraint firstItem="ldf-fZ-9ah" firstAttribute="centerX" secondItem="NKB-gq-pcF" secondAttribute="centerX" id="zOZ-g1-xOj"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
@@ -174,7 +194,7 @@
                                 </connections>
                             </button>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="u9e-jJ-c1E">
-                                <rect key="frame" x="244" y="376" width="76" height="29"/>
+                                <rect key="frame" x="244" y="377" width="76" height="29"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
                                     <segment title="Hide"/>
@@ -185,7 +205,7 @@
                                 </connections>
                             </segmentedControl>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Score" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Oww-zg-ZGr">
-                                <rect key="frame" x="244" y="413" width="68" height="21"/>
+                                <rect key="frame" x="244" y="412" width="68" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
@@ -199,7 +219,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NT9-jZ-wW9">
-                                <rect key="frame" x="3" y="381" width="50" height="19"/>
+                                <rect key="frame" x="3" y="381" width="50" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Restart"/>
                                 <connections>
@@ -284,6 +304,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="smN-GA-nGo"/>
+        <segue reference="e4r-8S-lR6"/>
     </inferredMetricsTieBreakers>
 </document>

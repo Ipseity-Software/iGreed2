@@ -11,9 +11,14 @@
 @interface GameView : UIViewController
 
 @end
-
-#define XSIZE 40
-#define YSIZE 26
+/*
+ iPhone SE	(0	0)
+ iPhone 8		(8	4)
+ iPhone 8 Plus	(13	8)
+ iPhone X		(8	14)
+ */
+#define BASE_XSIZE 40
+#define BASE_YSIZE 26
 #define WINPERCENT 25
 
 enum direction
@@ -24,5 +29,7 @@ enum direction
 	kDIR_D = 0x8,
 };
 
-extern char map[XSIZE][YSIZE];
+extern NSUInteger XSIZE;
+extern NSUInteger YSIZE;
+extern char **map;
 extern NSUInteger player_x, player_y;
