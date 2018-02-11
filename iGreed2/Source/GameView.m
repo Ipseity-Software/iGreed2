@@ -168,7 +168,7 @@ BOOL Level_Reset = YES; // this gets set to normal state during viewDidLoad->use
 	if (direction & kDIR_S) ++l_y; // down
 	if (direction & kDIR_A) --l_x; // left
 	if (direction & kDIR_D) ++l_x; // right
-	if (l_x > XSIZE || l_y > YSIZE) return NO; // check for edge
+	if (l_x >= XSIZE || l_y >= YSIZE) return NO; // check for edge
 	l_val = map[l_x][l_y];
 	if (!l_val) return NO; // space immediately to left is empty
 	slope_x = l_x - x; slope_y = l_y - y; // get move slope (to be added to p_*
@@ -185,7 +185,7 @@ BOOL Level_Reset = YES; // this gets set to normal state during viewDidLoad->use
 	if (direction & kDIR_S) ++l_y; // down
 	if (direction & kDIR_A) --l_x; // left
 	if (direction & kDIR_D) ++l_x; // right
-	if (l_x > XSIZE || l_y > YSIZE) return nil; // check for edge
+	if (l_x >= XSIZE || l_y >= YSIZE) return nil; // check for edge
 	l_val = map[l_x][l_y];
 	if (!l_val) return nil; // space immediately to left is empty
 	slope_x = l_x - x; slope_y = l_y - y; // get move slope (to be added to p_*
