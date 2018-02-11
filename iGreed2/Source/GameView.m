@@ -6,7 +6,7 @@
 //  Copyright © 2018 Ipseity. All rights reserved.
 //
 
-#import "GameView.h"
+#import "../Include/GameView.h" // this might need to be changed
 #include "../Include/coord_list.h"
 
 NSUInteger XSIZE;
@@ -24,6 +24,7 @@ NSUInteger YSIZE;
 @property (weak, nonatomic) IBOutlet UIButton *button_moveSD;
 @property (weak, nonatomic) IBOutlet UIButton *button_levelUp;
 @property (weak, nonatomic) IBOutlet UIButton *button_restart;
+@property (weak, nonatomic) IBOutlet UIButton *button_endGame;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segment_possibleMoves;
 @property (weak, nonatomic) IBOutlet UILabel *label_score;
 @property (weak, nonatomic) IBOutlet UILabel *label_points;
@@ -277,11 +278,13 @@ BOOL Level_Reset = YES; // this gets set to normal state during viewDidLoad->use
 }
 - (IBAction)userMove:(id)sender
 {
+	[[self button_endGame] setBackgroundColor:[UIColor whiteColor]];
 	if (Level_Reset)
 	{
 		Level_Reset = NO;
 		[[self button_levelUp] setBackgroundColor:[UIColor greenColor]];
 		[[self button_restart] setBackgroundColor:[UIColor whiteColor]];
+		[[self button_endGame] setBackgroundColor:[UIColor whiteColor]];
 	}
 	if ([self canMoveInDirection:[sender tag] fromX:player_x fromY:player_y])
 		[self moveInDirection:[sender tag]];
@@ -289,7 +292,7 @@ BOOL Level_Reset = YES; // this gets set to normal state during viewDidLoad->use
 }
 - (IBAction)userRestart:(id)sender
 {
-	[[self button_restart] setBackgroundColor:[UIColor redColor]];
+	if (!Level_Reset) [[self button_restart] setBackgroundColor:[UIColor redColor]];
 	if (Level_Reset)
 	{
 		gameOver = NO;
@@ -303,8 +306,13 @@ BOOL Level_Reset = YES; // this gets set to normal state during viewDidLoad->use
 		[self generateMap];
 		[self display];
 	}
-	else
-		Level_Reset = YES;
+	else Level_Reset = YES;
+}
+- (IBAction)userEndGame:(id)sender
+{
+	[[self button_endGame] setBackgroundColor:[UIColor redColor]];
+	if (Level_Reset) [self performSegueWithIdentifier:@"endGame" sender:self];
+	else Level_Reset = YES;
 }
 - (IBAction)userCheat:(id)sender
 {

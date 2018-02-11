@@ -42,7 +42,7 @@
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NKB-gq-pcF">
                                 <rect key="frame" x="16" y="72" width="288" height="427"/>
                                 <color key="backgroundColor" red="0.3857151493" green="0.29703393420000002" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <mutableString key="text">How to play: The game is played on a grid of numbers, you move your player with direction controls at the bottom of the screen. There are three simple rules to understanding this game  1. When your player moves onto a square, it will continue moving for that many squares 2. Your player may only visit each square one time (you can't go backwards) 3. When you run out of moves to make, the round is over. If you haven't cleared enough of the board, the game ends.  Your score is the percentage of squares that your player has visited. You earn points for each move. You will earn a bonus for taking riskier moves. Once you reach a certain score, you may level up by pressing the green button twice. Levels get harder as you go.  You may turn a switch on to see your available moves if you wish (but that would be cheating)  This game is an open source port of the linux game Greed written by Ethan Laur (@phyrrus9). Feel free to modify and improve it. Licensed under GPL.</mutableString>
+                                <string key="text">How to play: The game is played on a grid of numbers, you move your player with direction controls at the bottom of the screen. There are three simple rules to understanding this game  1. When your player moves onto a square, it will continue moving for that many squares 2. Your player may only visit each square one time (you can't go backwards) 3. When you run out of moves to make, the round is over. If you haven't cleared enough of the board, the game ends.  Your score is the percentage of squares that your player has visited. You earn points for each move. You will earn a bonus for taking riskier moves. Once you reach a certain score, you may level up by pressing the green button twice. Levels get harder as you go.  You may turn a switch on to see your available moves if you wish (but that would be cheating)  This game is an open source port of the linux game Greed written by Ethan Laur (@phyrrus9). Feel free to modify and improve it. Licensed under GPL.</string>
                                 <color key="textColor" red="1" green="0.630785135" blue="0.26186151000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -92,7 +92,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-93.75" y="46.478873239436624"/>
+            <point key="canvasLocation" x="-135" y="48"/>
         </scene>
         <!--Game View-->
         <scene sceneID="ovt-wD-wGZ">
@@ -194,7 +194,7 @@
                                 </connections>
                             </button>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="u9e-jJ-c1E">
-                                <rect key="frame" x="244" y="377" width="76" height="29"/>
+                                <rect key="frame" x="3" y="460" width="76" height="29"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
                                     <segment title="Hide"/>
@@ -212,20 +212,12 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Level" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="62a-Fb-Qbr">
-                                <rect key="frame" x="0.0" y="413" width="68" height="21"/>
+                                <rect key="frame" x="244" y="513" width="68" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NT9-jZ-wW9">
-                                <rect key="frame" x="3" y="381" width="50" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Restart"/>
-                                <connections>
-                                    <action selector="userRestart:" destination="EKm-vm-GIP" eventType="touchUpInside" id="B7w-Vd-6Ni"/>
-                                </connections>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Points" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PTS-vz-3Bh">
                                 <rect key="frame" x="244" y="463" width="68" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -233,11 +225,28 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sY2-vE-qzO">
+                                <rect key="frame" x="6" y="508" width="71" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="End Game"/>
+                                <connections>
+                                    <action selector="userEndGame:" destination="EKm-vm-GIP" eventType="touchUpInside" id="Eaz-b9-OrC"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NT9-jZ-wW9">
+                                <rect key="frame" x="16" y="407" width="50" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Restart"/>
+                                <connections>
+                                    <action selector="userRestart:" destination="EKm-vm-GIP" eventType="touchUpInside" id="B7w-Vd-6Ni"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <viewLayoutGuide key="safeArea" id="xlX-pQ-ghN"/>
                     </view>
                     <connections>
+                        <outlet property="button_endGame" destination="sY2-vE-qzO" id="hRZ-yn-XhM"/>
                         <outlet property="button_levelUp" destination="a8a-yk-8D5" id="Vde-Ih-kYx"/>
                         <outlet property="button_moveA" destination="lwf-Bh-r0c" id="VkY-Wg-PeJ"/>
                         <outlet property="button_moveD" destination="dJw-kJ-Gn2" id="D3d-pe-xSn"/>
@@ -254,6 +263,7 @@
                         <outlet property="segment_possibleMoves" destination="u9e-jJ-c1E" id="hLn-yF-sSv"/>
                         <outlet property="textView_gameBoard" destination="Agi-ZA-exD" id="5Dp-ZJ-1vB"/>
                         <segue destination="jg2-sn-sDw" kind="presentation" identifier="showScores" id="e4r-8S-lR6"/>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="endGame" id="J4s-B1-9R9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ECM-Yb-iKe" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -305,5 +315,6 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="e4r-8S-lR6"/>
+        <segue reference="J4s-B1-9R9"/>
     </inferredMetricsTieBreakers>
 </document>

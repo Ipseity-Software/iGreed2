@@ -8,8 +8,8 @@
 
 #import <sys/utsname.h>
 #import <UIKit/UIKit.h>
-#import "AppDelegate.h"
-#import "GameView.h"
+#import "../Include/AppDelegate.h" // this might need to be changed
+#import "../Include/GameView.h" // this might need to be changed
 
 const char* deviceName()
 {
