@@ -278,22 +278,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="DD7-KI-eUe">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="DD7-KI-eUe">
                                 <rect key="frame" x="0.0" y="125" width="320" height="443"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <sections/>
                             </tableView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="High Scores" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rIo-IY-BOh">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="High Scores" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rIo-IY-BOh">
                                 <rect key="frame" x="92" y="73" width="137" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="52y-zd-P3N">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="52y-zd-P3N">
                                 <rect key="frame" x="10" y="36" width="58" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Go Back"/>
                                 <connections>
                                     <action selector="button_GoBack_upin:" destination="jg2-sn-sDw" eventType="touchUpInside" id="G7X-q0-19j"/>
@@ -301,6 +298,16 @@
                             </button>
                         </subviews>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="DD7-KI-eUe" firstAttribute="leading" secondItem="M6F-dW-q5O" secondAttribute="leading" id="98T-f0-FZ4"/>
+                            <constraint firstItem="52y-zd-P3N" firstAttribute="top" secondItem="fdR-bA-okY" secondAttribute="top" constant="16" id="NLU-X3-XL2"/>
+                            <constraint firstItem="DD7-KI-eUe" firstAttribute="bottom" secondItem="fdR-bA-okY" secondAttribute="bottom" id="Q2j-FK-Whx"/>
+                            <constraint firstItem="rIo-IY-BOh" firstAttribute="top" secondItem="fdR-bA-okY" secondAttribute="top" constant="53" id="fLe-ZY-dAF"/>
+                            <constraint firstItem="rIo-IY-BOh" firstAttribute="centerX" secondItem="DD7-KI-eUe" secondAttribute="centerX" id="m1K-k3-MEf"/>
+                            <constraint firstItem="52y-zd-P3N" firstAttribute="leading" secondItem="fdR-bA-okY" secondAttribute="leading" constant="10" id="pS9-vp-9uO"/>
+                            <constraint firstItem="DD7-KI-eUe" firstAttribute="top" secondItem="rIo-IY-BOh" secondAttribute="bottom" constant="20" id="r1E-SD-HuN"/>
+                            <constraint firstAttribute="trailing" secondItem="DD7-KI-eUe" secondAttribute="trailing" id="udc-fk-gIc"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="fdR-bA-okY"/>
                     </view>
                     <connections>
@@ -315,6 +322,6 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="e4r-8S-lR6"/>
-        <segue reference="J4s-B1-9R9"/>
+        <segue reference="nxj-08-Gs9"/>
     </inferredMetricsTieBreakers>
 </document>

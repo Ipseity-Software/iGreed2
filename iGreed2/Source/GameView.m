@@ -46,14 +46,15 @@ struct gameUI_device gUIDeviceDetails; // used to set up UI objects
 	// set up gamepad
 	struct gameUI_item details;
 	struct gameUI_device d = gUIDeviceDetails;
-	details = gUIGetButton(kDIR_N);			[[self button_moveW ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // up
-	details = gUIGetButton(kDIR_S);			[[self button_moveS ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // down
-	details = gUIGetButton(kDIR_E);			[[self button_moveD ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // right
-	details = gUIGetButton(kDIR_W);			[[self button_moveA ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // left
-	details = gUIGetButton(kDIR_N | kDIR_W);	[[self button_moveWA] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // up left
-	details = gUIGetButton(kDIR_N | kDIR_E);	[[self button_moveWD] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // up right
-	details = gUIGetButton(kDIR_S | kDIR_W);	[[self button_moveSA] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // down left
-	details = gUIGetButton(kDIR_S | kDIR_E);	[[self button_moveSD] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // down right
+	details = gUIGetButton(0);				[[self button_levelUp] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // up
+	details = gUIGetButton(kDIR_N);			[[self button_moveW  ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // up
+	details = gUIGetButton(kDIR_S);			[[self button_moveS  ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // down
+	details = gUIGetButton(kDIR_E);			[[self button_moveD  ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // right
+	details = gUIGetButton(kDIR_W);			[[self button_moveA  ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // left
+	details = gUIGetButton(kDIR_N | kDIR_W);	[[self button_moveWA ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // up left
+	details = gUIGetButton(kDIR_N | kDIR_E);	[[self button_moveWD ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // up right
+	details = gUIGetButton(kDIR_S | kDIR_W);	[[self button_moveSA ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // down left
+	details = gUIGetButton(kDIR_S | kDIR_E);	[[self button_moveSD ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // down right
 	// set up game view and buttons
 	[[self textView_gameBoard]	setFrame:CGRectMake(	d.map.x,		d.map.y,		d.map.w,		d.map.h		)]; // game board
 	[[self button_restart]		setFrame:CGRectMake(	d.restart.x,	d.restart.y,	d.restart.w,	d.restart.h	)]; // restart btn

@@ -96,7 +96,7 @@ struct gameUI_item gUIGetButton(uint32_t direction)
 		case kDEV_SE:	base = gUIDevice_SE.keypadBase;		break;
 	}
 	ret = base;
-		if (direction == 0)					{ ret.y += (base.h * 1); ret.x += (base.w * 1);} //+  1 down, 1 over
+	if (direction == 0)						{ ret.y += (base.h * 1); ret.x += (base.w * 1); } //+  1 down, 1 over
 	else if (direction == kDIR_N)				{ ret.y += (base.h * 0); ret.x += (base.w * 1);} //N  0 down, 0 over
 	else if (direction == kDIR_S)				{ ret.y += (base.h * 2); ret.x += (base.w * 1);} //S  2 down, 1 over
 	else if (direction == kDIR_E)				{ ret.y += (base.h * 1); ret.x += (base.w * 2);} //E  1 down, 2 over
