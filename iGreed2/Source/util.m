@@ -57,7 +57,7 @@ struct gameUI_device gUIDevice_Eight =
 	{ 7,		635,		68,		21  },	// score
 	{ 291,	634,		68,		21  },	// points
 	{ 153,	635,		68,		21  },	// level
-	{ 67,	447,		60,		60  }	// keypadBase
+	{ 91,	447,		60,		60  }	// keypadBase 67
 };
 
 void clist_insert(struct clist_node ** list, uint64_t coord_x, uint64_t coord_y)

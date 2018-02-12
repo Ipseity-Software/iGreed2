@@ -94,7 +94,8 @@ struct gameUI_device gUIDeviceDetails; // used to set up UI objects
 			else
 				[string appendAttributedString: [[NSAttributedString alloc] initWithString:@"+" attributes:@{NSParagraphStyleAttributeName:paragraphStyle}]];
 		}
-		[string appendAttributedString: [[NSAttributedString alloc] initWithString:@"\n" attributes:@{NSParagraphStyleAttributeName:paragraphStyle}]];
+		if (y != YSIZE - 1)
+			[string appendAttributedString: [[NSAttributedString alloc] initWithString:@"\n" attributes:@{NSParagraphStyleAttributeName:paragraphStyle}]];
 	}
 	string = [self highlightCharacter:string atX:player_x atY:player_y withColor:[UIColor blueColor]];
 	string = [self highlightGridNumbers:string];

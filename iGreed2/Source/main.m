@@ -36,7 +36,7 @@ void setSizes()
 	if (!strcmp(Id, "iPhone10,1") || !strcmp(Id, "iPhone10,4") || //8
 	    (!strcmp(Id, "iPhone7,2") /* 6 */ || !strcmp(Id, "iPhone8,1") /* 6P */) ||
 	    (!strcmp(Id, "iPhone9,1") || !strcmp(Id, "iPhone9,3"))) // 7
-	{ gUIDeviceType = kDEV_8;  XSIZE += 8; YSIZE += 4; }
+	{ gUIDeviceType = kDEV_8;  XSIZE += 8; YSIZE += 2; }
 	if ((!strcmp(Id, "iPhone10,2") || !strcmp(Id, "iPhone10,5")) || //8 Plus
 	    (!strcmp(Id, "iPhone7,1") /* 6P */ || !strcmp(Id, "iPhone8,2") /* 6SP */) ||
 	    (!strcmp(Id, "iPhone9,2") || !strcmp(Id, "iPhone9,4"))) // 7 Plus
