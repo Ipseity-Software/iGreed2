@@ -8,8 +8,8 @@
 
 #import <sys/utsname.h>
 #import <UIKit/UIKit.h>
-#import "../Include/AppDelegate.h" // this might need to be changed
-#import "../Include/GameView.h" // this might need to be changed
+#import "AppDelegate.h"
+#import "GameView.h"
 
 const char* deviceName()
 {
@@ -20,23 +20,34 @@ const char* deviceName()
 
 extern NSUInteger XSIZE;
 extern NSUInteger YSIZE;
-void setMapSize()
+extern struct gameUI_device gUIDevice_X;
+extern struct gameUI_device gUIDevice_EightPlus;
+extern struct gameUI_device gUIDevice_Eight;
+extern struct gameUI_device gUIDevice_SE;
+void setSizes()
 {
 	unsigned i;
 	const char *Id = deviceName();
 	XSIZE = BASE_XSIZE;
 	YSIZE = BASE_YSIZE;
 	if (!strcmp(Id, "iPhone8,4") || !strcmp(Id, "iPhone10,4")) //SE
-	{ XSIZE += 0; YSIZE += 1; }
+	{ gUIDeviceType = kDEV_SE; XSIZE += 0; YSIZE += 1; }
 	if (!strcmp(Id, "iPhone10,1") || !strcmp(Id, "iPhone10,4")) //8
-	{ XSIZE += 8; YSIZE += 4; }
+	{ gUIDeviceType = kDEV_8;  XSIZE += 8; YSIZE += 4; }
 	if (!strcmp(Id, "iPhone10,2") || !strcmp(Id, "iPhone10,5")) //8 Plus
-	{ XSIZE += 13; YSIZE += 8; }
+	{ gUIDeviceType = kDEV_8P; XSIZE += 13; YSIZE += 8; }
 	if (!strcmp(Id, "iPhone10,3") || !strcmp(Id, "iPhone10,6")) //X
-	{ XSIZE += 8; YSIZE += 14; }
+	{ gUIDeviceType = kDEV_X;  XSIZE += 8; YSIZE += 14; }
 	map = malloc(sizeof(char *) * XSIZE);
 	for (i = 0; i < XSIZE; i++)
 		map[i] = malloc(sizeof(char) * YSIZE);
+	switch (gUIDeviceType)
+	{
+		case kDEV_X:	gUIDeviceDetails = gUIDevice_X;		break;
+		case kDEV_8P:	gUIDeviceDetails = gUIDevice_EightPlus;	break;
+		case kDEV_8:	gUIDeviceDetails = gUIDevice_Eight;	break;
+		case kDEV_SE:	gUIDeviceDetails = gUIDevice_SE;		break;
+	}
 }
 
 const char *getScoreFilePath()
@@ -67,7 +78,7 @@ int main(int argc, char * * argv)
 {
 	@autoreleasepool
 	{
-		setMapSize();
+		setSizes();
 		//printSaveFile();
 		//destroySaveFile();
 		return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));

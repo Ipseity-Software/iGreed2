@@ -102,6 +102,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" editable="NO" textAlignment="center" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Agi-ZA-exD">
+                                <rect key="frame" x="0.0" y="20" width="320" height="357"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <string key="text">0000000000000000000000000000000000011111111111111111111111111111111111222222222222222222222222222222222223333333333333333333333333333333333344444444444444444444444444444444444555555555555555555555555555555555556666666666666666666666666666666666677777777777777777777777777777777777888888888888888888888888888888888889999999999999999999999999999999999900000000000000000000000000000000000111111111111111111113511111111111112222222222222222222222222222222222233333333333333333333333333333333333444444444444444444444444444444444445555555555555555555555555555555555566666666666666666666666666666666666777777777777777777777777777777777778888888888888888888888888888888888899999999999999999999999999999999999</string>
+                                <fontDescription key="fontDescription" name="Courier" family="Courier" pointSize="14.5"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
                             <button opaque="NO" tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ulR-lT-E7R">
                                 <rect key="frame" x="135" y="398" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -138,14 +146,6 @@
                                     <action selector="userMove:" destination="EKm-vm-GIP" eventType="touchUpInside" id="jcb-eu-vdp"/>
                                 </connections>
                             </button>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" editable="NO" textAlignment="center" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Agi-ZA-exD">
-                                <rect key="frame" x="0.0" y="20" width="320" height="357"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                                <string key="text">0000000000000000000000000000000000011111111111111111111111111111111111222222222222222222222222222222222223333333333333333333333333333333333344444444444444444444444444444444444555555555555555555555555555555555556666666666666666666666666666666666677777777777777777777777777777777777888888888888888888888888888888888889999999999999999999999999999999999900000000000000000000000000000000000111111111111111111113511111111111112222222222222222222222222222222222233333333333333333333333333333333333444444444444444444444444444444444445555555555555555555555555555555555566666666666666666666666666666666666777777777777777777777777777777777778888888888888888888888888888888888899999999999999999999999999999999999</string>
-                                <fontDescription key="fontDescription" name="Courier" family="Courier" pointSize="14.5"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
                             <button opaque="NO" tag="9" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sxM-De-ipt">
                                 <rect key="frame" x="185" y="398" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -162,15 +162,6 @@
                                 <state key="normal" title="SW"/>
                                 <connections>
                                     <action selector="userMove:" destination="EKm-vm-GIP" eventType="touchUpInside" id="6Bx-Gh-odT"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" tag="12" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6IJ-NT-LB1">
-                                <rect key="frame" x="185" y="498" width="50" height="50"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="0.90000000000000002" alpha="1" colorSpace="calibratedWhite"/>
-                                <state key="normal" title="SE"/>
-                                <connections>
-                                    <action selector="userMove:" destination="EKm-vm-GIP" eventType="touchUpInside" id="See-zo-MtY"/>
                                 </connections>
                             </button>
                             <button opaque="NO" tag="12" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a8a-yk-8D5">
@@ -241,6 +232,15 @@
                                     <action selector="userRestart:" destination="EKm-vm-GIP" eventType="touchUpInside" id="B7w-Vd-6Ni"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" tag="12" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6IJ-NT-LB1">
+                                <rect key="frame" x="185" y="498" width="50" height="50"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.90000000000000002" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="SE"/>
+                                <connections>
+                                    <action selector="userMove:" destination="EKm-vm-GIP" eventType="touchUpInside" id="See-zo-MtY"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <viewLayoutGuide key="safeArea" id="xlX-pQ-ghN"/>
@@ -268,7 +268,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ECM-Yb-iKe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="560.625" y="49.647887323943664"/>
+            <point key="canvasLocation" x="557.97101449275362" y="48.913043478260875"/>
         </scene>
         <!--Scores View-->
         <scene sceneID="P5S-c3-Mbc">

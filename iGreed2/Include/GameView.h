@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "util.h"
 
 @interface GameView : UIViewController
 
@@ -23,13 +24,15 @@
 
 enum direction
 {
-	kDIR_W = 0x1,
-	kDIR_A = 0x2,
+	kDIR_N = 0x1,
+	kDIR_W = 0x2,
 	kDIR_S = 0x4,
-	kDIR_D = 0x8,
+	kDIR_E = 0x8,
 };
 
 extern NSUInteger XSIZE;
 extern NSUInteger YSIZE;
 extern char **map;
 extern NSUInteger player_x, player_y;
+extern enum gl_device gUIDeviceType;
+extern struct gameUI_device gUIDeviceDetails;

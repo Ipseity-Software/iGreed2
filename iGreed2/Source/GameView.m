@@ -6,8 +6,8 @@
 //  Copyright © 2018 Ipseity. All rights reserved.
 //
 
-#import "../Include/GameView.h" // this might need to be changed
-#include "../Include/coord_list.h"
+#import "GameView.h"
+#import "util.h"
 
 NSUInteger XSIZE;
 NSUInteger YSIZE;
@@ -39,6 +39,31 @@ NSUInteger player_level, player_level_removed, player_level_cleared, player_poin
 BOOL highlightPaths = NO;
 BOOL gameOver = NO;
 BOOL Level_Reset = YES; // this gets set to normal state during viewDidLoad->userRestart
+struct gameUI_device gUIDeviceDetails; // used to set up UI objects
+
+- (void)viewWillAppear:(BOOL)animated
+{
+	// set up gamepad
+	struct gameUI_item details;
+	struct gameUI_device d = gUIDeviceDetails;
+	details = gUIGetButton(kDIR_N);			[[self button_moveW ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // up
+	details = gUIGetButton(kDIR_S);			[[self button_moveS ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // down
+	details = gUIGetButton(kDIR_E);			[[self button_moveD ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // right
+	details = gUIGetButton(kDIR_W);			[[self button_moveA ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // left
+	details = gUIGetButton(kDIR_N | kDIR_W);	[[self button_moveWA] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // up left
+	details = gUIGetButton(kDIR_N | kDIR_E);	[[self button_moveWD] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // up right
+	details = gUIGetButton(kDIR_S | kDIR_W);	[[self button_moveSA] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // down left
+	details = gUIGetButton(kDIR_S | kDIR_E);	[[self button_moveSD] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // down right
+	// set up game view and buttons
+	[[self textView_gameBoard]	setFrame:CGRectMake(	d.map.x,		d.map.y,		d.map.w,		d.map.h		)]; // game board
+	[[self button_restart]		setFrame:CGRectMake(	d.restart.x,	d.restart.y,	d.restart.w,	d.restart.h	)]; // restart btn
+	[[self segment_possibleMoves]	setFrame:CGRectMake(	d.cheat.x,	d.cheat.y,	d.cheat.w,	d.cheat.h		)]; // cheat segment
+	[[self button_endGame]		setFrame:CGRectMake(	d.endgame.x,	d.endgame.y,	d.endgame.w,	d.endgame.h	)]; // end game btn
+	[[self label_score]			setFrame:CGRectMake(	d.score.x,	d.score.y,	d.score.w,	d.score.h		)]; // score lbl
+	[[self label_points]		setFrame:CGRectMake(	d.points.x,	d.points.y,	d.points.w,	d.points.h	)]; // points lbl
+	[[self label_level]			setFrame:CGRectMake(	d.level.x,	d.level.y,	d.level.w,	d.level.h		)]; // level lbl
+	[super viewDidAppear:animated];
+}
 
 - (void)viewDidLoad
 {
@@ -123,28 +148,28 @@ BOOL Level_Reset = YES; // this gets set to normal state during viewDidLoad->use
 {
 	struct clist_node *list = NULL;
 	BOOL foundMove = NO;
-	if ((list = [self trackMoveInDirection:kDIR_W fromX:x fromY:y]) != NULL) foundMove = YES;			// up
+	if ((list = [self trackMoveInDirection:kDIR_N fromX:x fromY:y]) != NULL) foundMove = YES;			// up
 	string = [self highlightString:string withCoordinateList:list];
 	clist_free(list);
-	if ((list = [self trackMoveInDirection:kDIR_A fromX:x fromY:y]) != NULL) foundMove = YES;			// left
+	if ((list = [self trackMoveInDirection:kDIR_W fromX:x fromY:y]) != NULL) foundMove = YES;			// left
 	string = [self highlightString:string withCoordinateList:list];
 	clist_free(list);
 	if ((list = [self trackMoveInDirection:kDIR_S fromX:x fromY:y]) != NULL) foundMove = YES;			// down
 	string = [self highlightString:string withCoordinateList:list];
 	clist_free(list);
-	if ((list = [self trackMoveInDirection:kDIR_D fromX:x fromY:y]) != NULL) foundMove = YES;			// right
+	if ((list = [self trackMoveInDirection:kDIR_E fromX:x fromY:y]) != NULL) foundMove = YES;			// right
 	string = [self highlightString:string withCoordinateList:list];
 	clist_free(list);
-	if ((list = [self trackMoveInDirection:kDIR_W | kDIR_A fromX:x fromY:y]) != NULL) foundMove = YES;	// up left
+	if ((list = [self trackMoveInDirection:kDIR_N | kDIR_W fromX:x fromY:y]) != NULL) foundMove = YES;	// up left
 	string = [self highlightString:string withCoordinateList:list];
 	clist_free(list);
-	if ((list = [self trackMoveInDirection:kDIR_W | kDIR_D fromX:x fromY:y]) != NULL) foundMove = YES;	// up right
+	if ((list = [self trackMoveInDirection:kDIR_N | kDIR_E fromX:x fromY:y]) != NULL) foundMove = YES;	// up right
 	string = [self highlightString:string withCoordinateList:list];
 	clist_free(list);
-	if ((list = [self trackMoveInDirection:kDIR_S | kDIR_A fromX:x fromY:y]) != NULL) foundMove = YES;	// down left
+	if ((list = [self trackMoveInDirection:kDIR_S | kDIR_W fromX:x fromY:y]) != NULL) foundMove = YES;	// down left
 	string = [self highlightString:string withCoordinateList:list];
 	clist_free(list);
-	if ((list = [self trackMoveInDirection:kDIR_S | kDIR_D fromX:x fromY:y]) != NULL) foundMove = YES;	// down right
+	if ((list = [self trackMoveInDirection:kDIR_S | kDIR_E fromX:x fromY:y]) != NULL) foundMove = YES;	// down right
 	string = [self highlightString:string withCoordinateList:list];
 	clist_free(list);
 	if (!foundMove && [self score] <= WINPERCENT) gameOver = YES; // no moves left (including a level up)
@@ -164,10 +189,10 @@ BOOL Level_Reset = YES; // this gets set to normal state during viewDidLoad->use
 {
 	NSUInteger l_x = x, l_y = y, l_val, p_x = x, p_y = y, p_i;
 	NSInteger slope_x, slope_y;
-	if (direction & kDIR_W) --l_y; // up
+	if (direction & kDIR_N) --l_y; // up
 	if (direction & kDIR_S) ++l_y; // down
-	if (direction & kDIR_A) --l_x; // left
-	if (direction & kDIR_D) ++l_x; // right
+	if (direction & kDIR_W) --l_x; // left
+	if (direction & kDIR_E) ++l_x; // right
 	if (l_x >= XSIZE || l_y >= YSIZE) return NO; // check for edge
 	l_val = map[l_x][l_y];
 	if (!l_val) return NO; // space immediately to left is empty
@@ -181,10 +206,10 @@ BOOL Level_Reset = YES; // this gets set to normal state during viewDidLoad->use
 	NSUInteger l_x = x, l_y = y, l_val, p_x = x, p_y = y, p_i;
 	NSInteger slope_x, slope_y;
 	struct clist_node *steps = NULL;
-	if (direction & kDIR_W) --l_y; // up
+	if (direction & kDIR_N) --l_y; // up
 	if (direction & kDIR_S) ++l_y; // down
-	if (direction & kDIR_A) --l_x; // left
-	if (direction & kDIR_D) ++l_x; // right
+	if (direction & kDIR_W) --l_x; // left
+	if (direction & kDIR_E) ++l_x; // right
 	if (l_x >= XSIZE || l_y >= YSIZE) return nil; // check for edge
 	l_val = map[l_x][l_y];
 	if (!l_val) return nil; // space immediately to left is empty
@@ -204,10 +229,10 @@ BOOL Level_Reset = YES; // this gets set to normal state during viewDidLoad->use
 {
 	NSUInteger p_x = player_x, p_y = player_y, p_i, l_val, moves_made = 0;
 	NSInteger slope_x = 0, slope_y = 0;
-	if (direction & kDIR_W) --slope_y; // up
+	if (direction & kDIR_N) --slope_y; // up
 	if (direction & kDIR_S) ++slope_y; // down
-	if (direction & kDIR_A) --slope_x; // left
-	if (direction & kDIR_D) ++slope_x; // right
+	if (direction & kDIR_W) --slope_x; // left
+	if (direction & kDIR_E) ++slope_x; // right
 	l_val = map[player_x + slope_x][player_y + slope_y];
 	for (p_i = 0, p_x += slope_x, p_y += slope_y; p_i < l_val; ++p_i, p_x += slope_x, p_y += slope_y) // move loop
 	{

@@ -15,7 +15,7 @@
 		4AEB802D202E4F430019D817 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AEB802B202E4F430019D817 /* LaunchScreen.storyboard */; };
 		4AEB8030202E4F430019D817 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AEB802F202E4F430019D817 /* main.m */; };
 		4AEB8038202E51030019D817 /* GameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AEB8037202E51030019D817 /* GameView.m */; };
-		4AEB8040202EA0DC0019D817 /* coord_list.c in Sources */ = {isa = PBXBuildFile; fileRef = 4AEB803E202EA0DC0019D817 /* coord_list.c */; };
+		4AEB8040202EA0DC0019D817 /* util.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AEB803E202EA0DC0019D817 /* util.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,8 +33,8 @@
 		4AEB802F202E4F430019D817 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		4AEB8036202E51030019D817 /* GameView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameView.h; sourceTree = "<group>"; };
 		4AEB8037202E51030019D817 /* GameView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GameView.m; sourceTree = "<group>"; };
-		4AEB803E202EA0DC0019D817 /* coord_list.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = coord_list.c; sourceTree = "<group>"; };
-		4AEB803F202EA0DC0019D817 /* coord_list.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coord_list.h; sourceTree = "<group>"; };
+		4AEB803E202EA0DC0019D817 /* util.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = util.m; sourceTree = "<group>"; };
+		4AEB803F202EA0DC0019D817 /* util.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,7 +82,7 @@
 			children = (
 				4AEB8037202E51030019D817 /* GameView.m */,
 				4A55B99A202EDF7E00F561A3 /* ScoresView.m */,
-				4AEB803E202EA0DC0019D817 /* coord_list.c */,
+				4AEB803E202EA0DC0019D817 /* util.m */,
 				4AEB802F202E4F430019D817 /* main.m */,
 				4AEB8024202E4F430019D817 /* EntryView.m */,
 				4AEB8021202E4F430019D817 /* AppDelegate.m */,
@@ -94,7 +94,7 @@
 			isa = PBXGroup;
 			children = (
 				4A55B999202EDF7E00F561A3 /* ScoresView.h */,
-				4AEB803F202EA0DC0019D817 /* coord_list.h */,
+				4AEB803F202EA0DC0019D817 /* util.h */,
 				4AEB8020202E4F430019D817 /* AppDelegate.h */,
 				4AEB8023202E4F430019D817 /* EntryView.h */,
 				4AEB8036202E51030019D817 /* GameView.h */,
@@ -175,7 +175,7 @@
 			files = (
 				4A55B99B202EDF7E00F561A3 /* ScoresView.m in Sources */,
 				4AEB8025202E4F430019D817 /* EntryView.m in Sources */,
-				4AEB8040202EA0DC0019D817 /* coord_list.c in Sources */,
+				4AEB8040202EA0DC0019D817 /* util.m in Sources */,
 				4AEB8030202E4F430019D817 /* main.m in Sources */,
 				4AEB8022202E4F430019D817 /* AppDelegate.m in Sources */,
 				4AEB8038202E51030019D817 /* GameView.m in Sources */,
