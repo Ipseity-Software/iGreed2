@@ -17,7 +17,13 @@ enum gl_device
 	kDEV_SE,
 	kDEV_X,
 	kDEV_8P,
-	kDEV_8
+	kDEV_8,
+	kDEV_7P = kDEV_8P,
+	kDEV_7 = kDEV_8,
+	kDEV_6S = kDEV_8,
+	kDEV_6SP = kDEV_8P,
+	kDEV_6P = kDEV_8P,
+	kDEV_6 = kDEV_8
 };
 
 struct gameUI_item

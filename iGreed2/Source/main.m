@@ -30,11 +30,16 @@ void setSizes()
 	const char *Id = deviceName();
 	XSIZE = BASE_XSIZE;
 	YSIZE = BASE_YSIZE;
+	
 	if (!strcmp(Id, "iPhone8,4") || !strcmp(Id, "iPhone10,4")) //SE
 	{ gUIDeviceType = kDEV_SE; XSIZE += 0; YSIZE += 1; }
-	if (!strcmp(Id, "iPhone10,1") || !strcmp(Id, "iPhone10,4")) //8
+	if (!strcmp(Id, "iPhone10,1") || !strcmp(Id, "iPhone10,4") || //8
+	    (!strcmp(Id, "iPhone7,2") /* 6 */ || !strcmp(Id, "iPhone8,1") /* 6P */) ||
+	    (!strcmp(Id, "iPhone9,1") || !strcmp(Id, "iPhone9,3"))) // 7
 	{ gUIDeviceType = kDEV_8;  XSIZE += 8; YSIZE += 4; }
-	if (!strcmp(Id, "iPhone10,2") || !strcmp(Id, "iPhone10,5")) //8 Plus
+	if ((!strcmp(Id, "iPhone10,2") || !strcmp(Id, "iPhone10,5")) || //8 Plus
+	    (!strcmp(Id, "iPhone7,1") /* 6P */ || !strcmp(Id, "iPhone8,2") /* 6SP */) ||
+	    (!strcmp(Id, "iPhone9,2") || !strcmp(Id, "iPhone9,4"))) // 7 Plus
 	{ gUIDeviceType = kDEV_8P; XSIZE += 13; YSIZE += 8; }
 	if (!strcmp(Id, "iPhone10,3") || !strcmp(Id, "iPhone10,6")) //X
 	{ gUIDeviceType = kDEV_X;  XSIZE += 8; YSIZE += 14; }
