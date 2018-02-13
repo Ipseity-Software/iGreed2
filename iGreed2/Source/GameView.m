@@ -38,11 +38,12 @@ struct preference gamePrefs;
 
 char **map;
 NSUInteger player_x, player_y;
-NSUInteger player_level, player_level_removed, player_level_cleared, player_points, highest;
+NSUInteger player_level, player_level_removed, player_level_cleared, player_points, player_moves, highest;
 BOOL highlightPaths = NO;
 BOOL gameOver = NO;
 BOOL Level_Reset = YES; // this gets set to normal state during viewDidLoad->userRestart
 struct gameUI_device gUIDeviceDetails; // used to set up UI objects
+struct clist_node *harden; // list of hardened coords
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -91,21 +92,17 @@ struct gameUI_device gUIDeviceDetails; // used to set up UI objects
 {
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] init];
 	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
-	NSUInteger x, y;
+	NSUInteger x, y, harden_i, harden_count;
 	paragraphStyle.alignment = NSTextAlignmentCenter;
 	for (y = 0; y < YSIZE; ++y)
 	{
 		for (x = 0; x < XSIZE; ++x)
 		{
-			if (x == player_x && y == player_y)
-				[string appendAttributedString: [[NSAttributedString alloc] initWithString:@"#" attributes:@{NSParagraphStyleAttributeName:paragraphStyle}]];
-			else if (map[x][y] != 0)
-				[string appendAttributedString: [[NSAttributedString alloc] initWithString:[[NSString alloc] initWithFormat:@"%d", map[x][y]] attributes:@{NSParagraphStyleAttributeName:paragraphStyle,NSForegroundColorAttributeName:[UIColor whiteColor]}]];
-			else
-				[string appendAttributedString: [[NSAttributedString alloc] initWithString:@"+" attributes:@{NSParagraphStyleAttributeName:paragraphStyle}]];
+			if (x == player_x && y == player_y) [string appendAttributedString: [[NSAttributedString alloc] initWithString:@"#" attributes:@{NSParagraphStyleAttributeName:paragraphStyle}]];
+			else if (map[x][y] != 0) [string appendAttributedString: [[NSAttributedString alloc] initWithString:[[NSString alloc] initWithFormat:@"%d", map[x][y]] attributes:@{NSParagraphStyleAttributeName:paragraphStyle,NSForegroundColorAttributeName:[UIColor whiteColor]}]];
+			else [string appendAttributedString: [[NSAttributedString alloc] initWithString:@"+" attributes:@{NSParagraphStyleAttributeName:paragraphStyle}]];
 		}
-		if (y != YSIZE - 1)
-			[string appendAttributedString: [[NSAttributedString alloc] initWithString:@"\n" attributes:@{NSParagraphStyleAttributeName:paragraphStyle}]];
+		if (y != YSIZE - 1) [string appendAttributedString: [[NSAttributedString alloc] initWithString:@"\n" attributes:@{NSParagraphStyleAttributeName:paragraphStyle}]];
 	}
 	string = [self highlightCharacter:string atX:player_x atY:player_y withColor:[UIColor blueColor]];
 	string = [self highlightGridNumbers:string];
@@ -114,6 +111,11 @@ struct gameUI_device gUIDeviceDetails; // used to set up UI objects
 	[[self label_score] setText:[[NSString alloc] initWithFormat:@"%.2f%%", [self score]]];
 	[[self label_points] setText:[[NSString alloc] initWithFormat:@"%lu", (unsigned long)player_points]];
 	[[self label_level] setText:[[NSString alloc] initWithFormat:@"lvl %lu", (unsigned long)player_level + 1]];
+	harden_count = clist_count(harden);
+	for (harden_i = 0; harden_i < harden_count; ++harden_i) // loop over hardened vals and make them black/white so they're easy to spot
+	{ string = [self highlightBackground:string atX:clist_get(harden, harden_i)->coord_x atY:clist_get(harden, harden_i)->coord_y withColor:[UIColor whiteColor]];
+	  string = [self highlightCharacter: string atX:clist_get(harden, harden_i)->coord_x atY:clist_get(harden, harden_i)->coord_y withColor:[UIColor blackColor]]; }
+	harden = clist_free(harden); // wipe it out so it only shows for 1 move
 	if ([self score] > WINPERCENT) [[self button_levelUp] setHidden:NO]; // player can level up
 	else if (gameOver) [self disableGame];
 	[[self textView_gameBoard] setAttributedText:string];
@@ -176,9 +178,9 @@ struct gameUI_device gUIDeviceDetails; // used to set up UI objects
 	}
 	switch (clr)
 	{
-		case kCOL_GRY:	printf("grey\n"); return [UIColor grayColor];
-		case kCOL_RED:	printf("red\n"); return [UIColor redColor];
-		case kCOL_BLU:	printf("blue\n"); return [UIColor blueColor];
+		case kCOL_GRY:	return [UIColor grayColor];
+		case kCOL_RED:	return [UIColor redColor];
+		case kCOL_BLU:	return [UIColor blueColor];
 	}
 }
 - (NSMutableAttributedString *)highlightPossibleMoves:(NSMutableAttributedString *)string fromX:(NSUInteger)x fromY:(NSUInteger)y withIncrement:(NSUInteger)increment
@@ -292,6 +294,8 @@ struct gameUI_device gUIDeviceDetails; // used to set up UI objects
 	if (moves_made > 1)	player_points += moves_made;				 // standard points
 	if (moves_made > 5)	player_points += [self score];	 		 // moderate bonus for 5,6,7
 	if (moves_made > 7)	player_points += [self score] * player_level; // huge bonus for 8 & 9 items
+	++player_moves;
+	[self hardenLevel];
 }
 - (void)levelUpMap
 {
@@ -302,6 +306,20 @@ struct gameUI_device gUIDeviceDetails; // used to set up UI objects
 		while (rm_x == player_x && rm_y == player_y);
 		map[rm_x][rm_y] = 0;
 		++player_level_removed;
+	}
+}
+- (void)hardenLevel
+{
+	NSUInteger minMoves, squares, i, x, y;
+	if (gamePrefs.difficulty == 0) return; // easy mode is easy
+	minMoves = gamePrefs.difficulty == 2 ? 10 /* hard mode */ : 35 /* normal mode */;
+	squares = (gamePrefs.difficulty - 1) * player_level; // each level gets harder, level 1 doesn't get hardened
+	if (player_moves <= minMoves || player_moves % 3 != 0) return; // don't harden if player hasnt moved enough, only harden every third move
+	for (i = 0; i < squares; ++i)
+	{
+		do { x = rand() % XSIZE; y = rand() % YSIZE; } while (map[x][y] == 0 || map[x][y] == 9 || (x == 0 && y == 0)); // don't modify crossed squares, and don't wrap them over, don't touch (0,0)
+		++map[x][y]; // increment the square
+		clist_insert(&harden, x, y); // push the number onto the list
 	}
 }
 - (void)generateMap
@@ -315,6 +333,7 @@ struct gameUI_device gUIDeviceDetails; // used to set up UI objects
 	player_x = rand() % XSIZE;
 	player_y = rand() % YSIZE;
 	map[player_x][player_y] = 0;
+	player_moves = 0;
 	for (i_level = 0; i_level < player_level; ++i_level) [self levelUpMap];
 }
 - (float)score { return ((float)player_level_cleared / (float)(XSIZE * YSIZE - player_level_removed)) * 100.0; }

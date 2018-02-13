@@ -76,13 +76,26 @@ void clist_insert(struct clist_node ** list, uint64_t coord_x, uint64_t coord_y)
 		position->next = node;
 	}
 }
-void clist_free(struct clist_node *list)
+struct clist_node *clist_get(struct clist_node *list, NSUInteger position)
 {
-	if (list == NULL) return;
-	if (list->next != NULL)
-		clist_free(list->next);
-	list->next = NULL;
+	struct clist_node *ptr;
+	NSUInteger i;
+	for (i = 0, ptr = list; ptr != NULL && i != position; ++i, ptr = ptr->next);
+	return ptr;
+}
+NSUInteger clist_count(struct clist_node *list)
+{
+	struct clist_node *ptr;
+	NSUInteger i;
+	for (i = 0, ptr = list; ptr != NULL; ++i, ptr = ptr->next);
+	return i;
+}
+struct clist_node *clist_free(struct clist_node *list)
+{
+	if (list == NULL) return NULL;
+	list->next = clist_free(list->next);
 	free(list);
+	return NULL;
 }
 struct gameUI_item gUIGetButton(uint32_t direction)
 {
