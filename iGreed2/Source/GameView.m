@@ -7,10 +7,13 @@
 //
 
 #import "GameView.h"
+#import "ScoresView.h"
+#import "OptionsView.h"
 #import "util.h"
 
 NSUInteger XSIZE;
 NSUInteger YSIZE;
+struct preference gamePrefs;
 
 @interface GameView ()
 @property (weak, nonatomic) IBOutlet UITextView *textView_gameBoard;
@@ -35,7 +38,7 @@ NSUInteger YSIZE;
 
 char **map;
 NSUInteger player_x, player_y;
-NSUInteger player_level, player_level_removed, player_level_cleared, player_points;
+NSUInteger player_level, player_level_removed, player_level_cleared, player_points, highest;
 BOOL highlightPaths = NO;
 BOOL gameOver = NO;
 BOOL Level_Reset = YES; // this gets set to normal state during viewDidLoad->userRestart
@@ -68,6 +71,12 @@ struct gameUI_device gUIDeviceDetails; // used to set up UI objects
 
 - (void)viewDidLoad
 {
+	gamePrefs = [OptionsView loadPrefs];
+	highest = [ScoresView highestScore];
+	if (gamePrefs.seed == 0)
+		srand((unsigned int)time(0));
+	else
+		srand(gamePrefs.seed);
 	[super viewDidLoad];
 	[[self textView_gameBoard] setBackgroundColor:[UIColor blackColor]];
 	[self userRestart:nil];
@@ -100,7 +109,7 @@ struct gameUI_device gUIDeviceDetails; // used to set up UI objects
 	}
 	string = [self highlightCharacter:string atX:player_x atY:player_y withColor:[UIColor blueColor]];
 	string = [self highlightGridNumbers:string];
-	if (highlightPaths) string = [self highlightPossibleMoves:string fromX:player_x fromY:player_y withColor:[UIColor grayColor]];
+	if (highlightPaths) string = [self highlightPossibleMoves:string fromX:player_x fromY:player_y withIncrement:0];
 	[string addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Courier" size:12.5] range:(NSRange){0, [string length]}];
 	[[self label_score] setText:[[NSString alloc] initWithFormat:@"%.2f%%", [self score]]];
 	[[self label_points] setText:[[NSString alloc] initWithFormat:@"%lu", (unsigned long)player_points]];
@@ -108,6 +117,10 @@ struct gameUI_device gUIDeviceDetails; // used to set up UI objects
 	if ([self score] > WINPERCENT) [[self button_levelUp] setHidden:NO]; // player can level up
 	else if (gameOver) [self disableGame];
 	[[self textView_gameBoard] setAttributedText:string];
+		if (player_points > highest)		[[self label_points] setTextColor:[UIColor greenColor]];
+	else if (player_points > (highest / 2))	[[self label_points] setTextColor:[UIColor yellowColor]];
+	else if (player_points > (highest / 4))	[[self label_points] setTextColor:[UIColor orangeColor]];
+	else if (highest != 0)				[[self label_points] setTextColor:[UIColor redColor]];
 }
 - (NSMutableAttributedString *)highlightCharacter:(NSMutableAttributedString *)string atX:(NSUInteger)x atY:(NSUInteger)y withColor:(UIColor *)color
 {
@@ -146,44 +159,77 @@ struct gameUI_device gUIDeviceDetails; // used to set up UI objects
 	}
 	return string;
 }
-- (NSMutableAttributedString *)highlightPossibleMoves:(NSMutableAttributedString *)string fromX:(NSUInteger)x fromY:(NSUInteger)y withColor:(UIColor *)color
+- (struct clist_node *)destFromList:(struct clist_node *)list
+{
+	struct clist_node *ptr;
+	for (ptr = list; ptr->next != NULL; ptr = ptr->next);
+	return ptr;
+}
+- (UIColor *)getColorForIncrement:(NSUInteger)increment
+{
+	enum uxcolor clr = 0;
+	switch (increment)
+	{
+		case 0:	clr = gamePrefs.move1;	break;
+		case 1:	clr = gamePrefs.move2;	break;
+		case 2:	clr = gamePrefs.move3;	break;
+	}
+	switch (clr)
+	{
+		case kCOL_GRY:	printf("grey\n"); return [UIColor grayColor];
+		case kCOL_RED:	printf("red\n"); return [UIColor redColor];
+		case kCOL_BLU:	printf("blue\n"); return [UIColor blueColor];
+	}
+}
+- (NSMutableAttributedString *)highlightPossibleMoves:(NSMutableAttributedString *)string fromX:(NSUInteger)x fromY:(NSUInteger)y withIncrement:(NSUInteger)increment
 {
 	struct clist_node *list = NULL;
 	BOOL foundMove = NO;
+	UIColor *color;
+	if (increment >= gamePrefs.moves) return string;
+	color = [self getColorForIncrement:increment];
 	if ((list = [self trackMoveInDirection:kDIR_N fromX:x fromY:y]) != NULL) foundMove = YES;			// up
-	string = [self highlightString:string withCoordinateList:list];
+	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
+	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
 	if ((list = [self trackMoveInDirection:kDIR_W fromX:x fromY:y]) != NULL) foundMove = YES;			// left
-	string = [self highlightString:string withCoordinateList:list];
+	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
+	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
 	if ((list = [self trackMoveInDirection:kDIR_S fromX:x fromY:y]) != NULL) foundMove = YES;			// down
-	string = [self highlightString:string withCoordinateList:list];
+	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
+	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
 	if ((list = [self trackMoveInDirection:kDIR_E fromX:x fromY:y]) != NULL) foundMove = YES;			// right
-	string = [self highlightString:string withCoordinateList:list];
+	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
+	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
 	if ((list = [self trackMoveInDirection:kDIR_N | kDIR_W fromX:x fromY:y]) != NULL) foundMove = YES;	// up left
-	string = [self highlightString:string withCoordinateList:list];
+	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
+	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
 	if ((list = [self trackMoveInDirection:kDIR_N | kDIR_E fromX:x fromY:y]) != NULL) foundMove = YES;	// up right
-	string = [self highlightString:string withCoordinateList:list];
+	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
+	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
 	if ((list = [self trackMoveInDirection:kDIR_S | kDIR_W fromX:x fromY:y]) != NULL) foundMove = YES;	// down left
-	string = [self highlightString:string withCoordinateList:list];
+	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
+	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
 	if ((list = [self trackMoveInDirection:kDIR_S | kDIR_E fromX:x fromY:y]) != NULL) foundMove = YES;	// down right
-	string = [self highlightString:string withCoordinateList:list];
+	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
+	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
-	if (!foundMove && [self score] <= WINPERCENT) gameOver = YES; // no moves left (including a level up)
+	if (!foundMove && [self score] <= WINPERCENT && increment == 0) gameOver = YES; // no moves left (including a level up)
 	return string;
 }
-- (NSMutableAttributedString *)highlightString:(NSMutableAttributedString *)string withCoordinateList:(struct clist_node *)list
+- (NSMutableAttributedString *)highlightString:(NSMutableAttributedString *)string withCoordinateList:(struct clist_node *)list withColor:(UIColor *)color
 {
 	if (list != NULL)
 	{
-		string = [self highlightBackground:string atX:(NSUInteger)list->coord_x atY:(NSUInteger)list->coord_y withColor:[UIColor grayColor]];
+		string = [self highlightBackground:string atX:(NSUInteger)list->coord_x atY:(NSUInteger)list->coord_y withColor:color];
 		string = [self highlightCharacter:string atX:(NSUInteger)list->coord_x atY:(NSUInteger)list->coord_y withColor:[UIColor whiteColor]];
-		string = [self highlightString:string withCoordinateList:list->next];
+		string = [self highlightString:string withCoordinateList:list->next withColor:color];
 	}
 	return string;
 }
@@ -249,7 +295,7 @@ struct gameUI_device gUIDeviceDetails; // used to set up UI objects
 }
 - (void)levelUpMap
 {
-	NSUInteger i, rm_x, rm_y, removeItems = rand() % player_level * 2 + 1;
+	NSUInteger i, rm_x, rm_y, removeItems = rand() % player_level * (gamePrefs.difficulty + 1) + 1;
 	for (i = 0; i < removeItems; ++i)
 	{
 		do { rm_x = rand() % XSIZE; rm_y = rand() % YSIZE; }
@@ -261,7 +307,6 @@ struct gameUI_device gUIDeviceDetails; // used to set up UI objects
 - (void)generateMap
 {
 	NSUInteger x, y, i_level;
-	srand((unsigned int)time(0));
 	for (x = 0; x < XSIZE; ++x)
 		for (y = 0; y < YSIZE; ++y)
 			map[x][y] = rand() % 9 + 1;

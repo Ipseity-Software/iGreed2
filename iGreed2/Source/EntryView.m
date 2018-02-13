@@ -33,5 +33,9 @@
 {
 	[self performSegueWithIdentifier:@"showScores" sender:self];
 }
+- (IBAction)button_Options_upin:(id)sender
+{
+	[self performSegueWithIdentifier:@"showOptions" sender:self];
+}
 
 @end

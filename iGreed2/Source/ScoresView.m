@@ -38,6 +38,38 @@ void load_sort(struct load_entry **l, NSUInteger size)
 			if (l[j]->score < l[j + 1]->score)
 				load_swap(l, j, j + 1);
 }
++ (NSUInteger)highestScore
+{
+	FILE *fp;
+	struct load_entry fentry;
+	struct load_entry **list_fentry;
+	NSUInteger load_count = 0, load_i, highest = 0;
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	NSString *documentsDirectory = [paths objectAtIndex:0];
+	NSString *scoresFile = [documentsDirectory stringByAppendingPathComponent:@"/scores.txt"];
+	if ((fp = fopen([scoresFile UTF8String], "r")) == NULL) // failed to open file
+	{ printf("File not exist\n"); return 0; }
+	// read over the file to determine data entries
+	while (fscanf(fp, "%[^\n]\n", fentry.name) != EOF)
+	{ fscanf(fp, "%lu/%f/%lu\n", &fentry.level, &fentry.percent, &fentry.score); ++load_count; }
+	fseek(fp, 0L, SEEK_SET);
+	// read the file twice, this time store the data
+	list_fentry = malloc(sizeof(struct load_entry *) * load_count);
+	for (load_i = 0; load_i < load_count; ++load_i)
+	{
+		list_fentry[load_i] = malloc(sizeof(struct load_entry));
+		fscanf(fp, "%[^\n]\n", list_fentry[load_i]->name);
+		fscanf(fp, "%lu/%f/%lu\n", &list_fentry[load_i]->level, &list_fentry[load_i]->percent, &list_fentry[load_i]->score);
+	}
+	fclose(fp);
+	// done reading it, now time to sort and set up the arrays
+	load_sort(list_fentry, load_count);
+	if (load_count > 0) highest = list_fentry[0]->score;
+	// clean up
+	for (load_i = 0; load_i < load_count; ++load_i) free(list_fentry[load_i]);
+	free(list_fentry);
+	return highest;
+}
 - (void)viewDidLoad
 {
 	FILE *fp;

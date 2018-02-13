@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface ScoresView : UIViewController <UITableViewDelegate, UITableViewDataSource>
-
++ (NSUInteger)highestScore;
 @end

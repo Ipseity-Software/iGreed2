@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4A55B99B202EDF7E00F561A3 /* ScoresView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A55B99A202EDF7E00F561A3 /* ScoresView.m */; };
+		4A7A15F4203287B0008041DE /* OptionsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A7A15F3203287B0008041DE /* OptionsView.m */; };
 		4AEB8022202E4F430019D817 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AEB8021202E4F430019D817 /* AppDelegate.m */; };
 		4AEB8025202E4F430019D817 /* EntryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AEB8024202E4F430019D817 /* EntryView.m */; };
 		4AEB8028202E4F430019D817 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AEB8026202E4F430019D817 /* Main.storyboard */; };
@@ -21,6 +22,8 @@
 /* Begin PBXFileReference section */
 		4A55B999202EDF7E00F561A3 /* ScoresView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScoresView.h; sourceTree = "<group>"; };
 		4A55B99A202EDF7E00F561A3 /* ScoresView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScoresView.m; sourceTree = "<group>"; };
+		4A7A15F2203287B0008041DE /* OptionsView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OptionsView.h; sourceTree = "<group>"; };
+		4A7A15F3203287B0008041DE /* OptionsView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OptionsView.m; sourceTree = "<group>"; };
 		4AEB801D202E4F430019D817 /* iGreed2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iGreed2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AEB8020202E4F430019D817 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		4AEB8021202E4F430019D817 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -80,6 +83,7 @@
 		4AEB8039202E510A0019D817 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				4A7A15F3203287B0008041DE /* OptionsView.m */,
 				4AEB8037202E51030019D817 /* GameView.m */,
 				4A55B99A202EDF7E00F561A3 /* ScoresView.m */,
 				4AEB803E202EA0DC0019D817 /* util.m */,
@@ -93,6 +97,7 @@
 		4AEB803A202E512C0019D817 /* Include */ = {
 			isa = PBXGroup;
 			children = (
+				4A7A15F2203287B0008041DE /* OptionsView.h */,
 				4A55B999202EDF7E00F561A3 /* ScoresView.h */,
 				4AEB803F202EA0DC0019D817 /* util.h */,
 				4AEB8020202E4F430019D817 /* AppDelegate.h */,
@@ -177,6 +182,7 @@
 				4AEB8025202E4F430019D817 /* EntryView.m in Sources */,
 				4AEB8040202EA0DC0019D817 /* util.m in Sources */,
 				4AEB8030202E4F430019D817 /* main.m in Sources */,
+				4A7A15F4203287B0008041DE /* OptionsView.m in Sources */,
 				4AEB8022202E4F430019D817 /* AppDelegate.m in Sources */,
 				4AEB8038202E51030019D817 /* GameView.m in Sources */,
 			);
