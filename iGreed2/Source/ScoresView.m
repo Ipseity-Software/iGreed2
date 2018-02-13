@@ -31,13 +31,8 @@ void load_swap(struct load_entry **l, NSUInteger x, NSUInteger y)
 	l[y] = tmp;
 }
 void load_sort(struct load_entry **l, NSUInteger size)
-{
-	NSUInteger i, j;
-	for (i = 0; i < size - 1; ++i)
-		for (j = 0; j < size - i - 1; ++j)
-			if (l[j]->score < l[j + 1]->score)
-				load_swap(l, j, j + 1);
-}
+{ NSUInteger i, j;
+  for (i = 0; i < size - 1; ++i) for (j = 0; j < size - i - 1; ++j) if (l[j]->score < l[j + 1]->score) load_swap(l, j, j + 1); /* simple bubble sort */ }
 + (NSUInteger)highestScore
 {
 	FILE *fp;
@@ -103,8 +98,7 @@ void load_sort(struct load_entry **l, NSUInteger size)
 	for (load_i = 0; load_i < (load_count > 25 ? 25 : load_count); ++load_i)
 	{
 		[load_name addObject:[[NSString alloc] initWithUTF8String:list_fentry[load_i]->name]];
-		[load_data addObject:[[NSString alloc] initWithFormat:@"LVL %lu | %.0f%% | %lu PT",
-						  list_fentry[load_i]->level, round(list_fentry[load_i]->percent), list_fentry[load_i]->score]];
+		[load_data addObject:[[NSString alloc] initWithFormat:@"LVL %lu | %.0f%% | %lu PT", list_fentry[load_i]->level, round(list_fentry[load_i]->percent), list_fentry[load_i]->score]];
 	}
 	tableNames = load_name; tableData = load_data; // set the tables
 	// clean up

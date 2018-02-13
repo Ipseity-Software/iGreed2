@@ -37,17 +37,13 @@ struct preference gamePrefs;
 @implementation GameView
 
 char **map;
-NSUInteger player_x, player_y;
-NSUInteger player_level, player_level_removed, player_level_cleared, player_points, player_moves, highest;
-BOOL highlightPaths = NO;
-BOOL gameOver = NO;
-BOOL Level_Reset = YES; // this gets set to normal state during viewDidLoad->userRestart
+struct { NSUInteger x, y, level, points, moves, highscore, cleared, removed; } player_info;
+struct { BOOL paths, gameOver, enable; } game_info = { NO, NO, YES };
 struct gameUI_device gUIDeviceDetails; // used to set up UI objects
 struct clist_node *harden; // list of hardened coords
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated // sets up game pad, map, and other UI items
 {
-	// set up gamepad
 	struct gameUI_item details;
 	struct gameUI_device d = gUIDeviceDetails;
 	details = gUIGetButton(0);				[[self button_levelUp] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // up
@@ -59,7 +55,6 @@ struct clist_node *harden; // list of hardened coords
 	details = gUIGetButton(kDIR_N | kDIR_E);	[[self button_moveWD ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // up right
 	details = gUIGetButton(kDIR_S | kDIR_W);	[[self button_moveSA ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // down left
 	details = gUIGetButton(kDIR_S | kDIR_E);	[[self button_moveSD ] setFrame:CGRectMake(details.x, details.y, details.w, details.h)]; // down right
-	// set up game view and buttons
 	[[self textView_gameBoard]	setFrame:CGRectMake(	d.map.x,		d.map.y,		d.map.w,		d.map.h		)]; // game board
 	[[self button_restart]		setFrame:CGRectMake(	d.restart.x,	d.restart.y,	d.restart.w,	d.restart.h	)]; // restart btn
 	[[self segment_possibleMoves]	setFrame:CGRectMake(	d.cheat.x,	d.cheat.y,	d.cheat.w,	d.cheat.h		)]; // cheat segment
@@ -69,11 +64,10 @@ struct clist_node *harden; // list of hardened coords
 	[[self label_level]			setFrame:CGRectMake(	d.level.x,	d.level.y,	d.level.w,	d.level.h		)]; // level lbl
 	[super viewDidAppear:animated];
 }
-
 - (void)viewDidLoad
 {
 	gamePrefs = [OptionsView loadPrefs];
-	highest = [ScoresView highestScore];
+	player_info.highscore = [ScoresView highestScore];
 	if (gamePrefs.seed == 0)
 		srand((unsigned int)time(0));
 	else
@@ -83,11 +77,7 @@ struct clist_node *harden; // list of hardened coords
 	[self userRestart:nil];
 	[self display];
 }
-
-- (void)didReceiveMemoryWarning
-{
-	[super didReceiveMemoryWarning];
-}
+- (void)didReceiveMemoryWarning { [super didReceiveMemoryWarning]; }
 - (void)display
 {
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] init];
@@ -98,31 +88,31 @@ struct clist_node *harden; // list of hardened coords
 	{
 		for (x = 0; x < XSIZE; ++x)
 		{
-			if (x == player_x && y == player_y) [string appendAttributedString: [[NSAttributedString alloc] initWithString:@"#" attributes:@{NSParagraphStyleAttributeName:paragraphStyle}]];
+			if (x == player_info.x && y == player_info.y) [string appendAttributedString: [[NSAttributedString alloc] initWithString:@"#" attributes:@{NSParagraphStyleAttributeName:paragraphStyle}]];
 			else if (map[x][y] != 0) [string appendAttributedString: [[NSAttributedString alloc] initWithString:[[NSString alloc] initWithFormat:@"%d", map[x][y]] attributes:@{NSParagraphStyleAttributeName:paragraphStyle,NSForegroundColorAttributeName:[UIColor whiteColor]}]];
 			else [string appendAttributedString: [[NSAttributedString alloc] initWithString:@"+" attributes:@{NSParagraphStyleAttributeName:paragraphStyle}]];
 		}
 		if (y != YSIZE - 1) [string appendAttributedString: [[NSAttributedString alloc] initWithString:@"\n" attributes:@{NSParagraphStyleAttributeName:paragraphStyle}]];
 	}
-	string = [self highlightCharacter:string atX:player_x atY:player_y withColor:[UIColor blueColor]];
+	string = [self highlightCharacter:string atX:player_info.x atY:player_info.y withColor:[UIColor blueColor]];
 	string = [self highlightGridNumbers:string];
-	if (highlightPaths) string = [self highlightPossibleMoves:string fromX:player_x fromY:player_y withIncrement:0];
+	if (game_info.paths) string = [self highlightPossibleMoves:string fromX:player_info.x fromY:player_info.y withIncrement:0];
 	[string addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Courier" size:12.5] range:(NSRange){0, [string length]}];
 	[[self label_score] setText:[[NSString alloc] initWithFormat:@"%.2f%%", [self score]]];
-	[[self label_points] setText:[[NSString alloc] initWithFormat:@"%lu", (unsigned long)player_points]];
-	[[self label_level] setText:[[NSString alloc] initWithFormat:@"lvl %lu", (unsigned long)player_level + 1]];
+	[[self label_points] setText:[[NSString alloc] initWithFormat:@"%lu", (unsigned long)player_info.points]];
+	[[self label_level] setText:[[NSString alloc] initWithFormat:@"lvl %lu", (unsigned long)player_info.level + 1]];
 	harden_count = clist_count(harden);
 	for (harden_i = 0; harden_i < harden_count; ++harden_i) // loop over hardened vals and make them black/white so they're easy to spot
 	{ string = [self highlightBackground:string atX:clist_get(harden, harden_i)->coord_x atY:clist_get(harden, harden_i)->coord_y withColor:[UIColor whiteColor]];
 	  string = [self highlightCharacter: string atX:clist_get(harden, harden_i)->coord_x atY:clist_get(harden, harden_i)->coord_y withColor:[UIColor blackColor]]; }
 	harden = clist_free(harden); // wipe it out so it only shows for 1 move
 	if ([self score] > WINPERCENT) [[self button_levelUp] setHidden:NO]; // player can level up
-	else if (gameOver) [self disableGame];
+	else if (game_info.gameOver) [self disableGame];
 	[[self textView_gameBoard] setAttributedText:string];
-		if (player_points > highest)		[[self label_points] setTextColor:[UIColor greenColor]];
-	else if (player_points > (highest / 2))	[[self label_points] setTextColor:[UIColor yellowColor]];
-	else if (player_points > (highest / 4))	[[self label_points] setTextColor:[UIColor orangeColor]];
-	else if (highest != 0)				[[self label_points] setTextColor:[UIColor redColor]];
+		if (player_info.points > player_info.highscore)		[[self label_points] setTextColor:[UIColor greenColor]];
+	else if (player_info.points > (player_info.highscore / 2))	[[self label_points] setTextColor:[UIColor yellowColor]];
+	else if (player_info.points > (player_info.highscore / 4))	[[self label_points] setTextColor:[UIColor orangeColor]];
+	else if (player_info.highscore != 0)				[[self label_points] setTextColor:[UIColor redColor]];
 }
 - (NSMutableAttributedString *)highlightCharacter:(NSMutableAttributedString *)string atX:(NSUInteger)x atY:(NSUInteger)y withColor:(UIColor *)color
 {
@@ -222,7 +212,7 @@ struct clist_node *harden; // list of hardened coords
 	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
 	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
-	if (!foundMove && [self score] <= WINPERCENT && increment == 0) gameOver = YES; // no moves left (including a level up)
+	if (!foundMove && [self score] <= WINPERCENT && increment == 0) game_info.gameOver = YES; // no moves left (including a level up)
 	return string;
 }
 - (NSMutableAttributedString *)highlightString:(NSMutableAttributedString *)string withCoordinateList:(struct clist_node *)list withColor:(UIColor *)color
@@ -266,46 +256,41 @@ struct clist_node *harden; // list of hardened coords
 	slope_x = l_x - x; slope_y = l_y - y; // get move slope (to be added to p_*
 	for (p_i = 0, p_x += slope_x, p_y += slope_y; p_i < l_val; ++p_i, p_x += slope_x, p_y += slope_y) // see if possible
 	{
-		if (p_x >= XSIZE /* bounds check */ || p_y >= YSIZE /* bounds check */ || map[p_x][p_y] == 0 /* empty space check */)
-		{
-			clist_free(steps);
-			return nil;
-		}
+		if (p_x >= XSIZE /* bounds check */ || p_y >= YSIZE /* bounds check */ || map[p_x][p_y] == 0 /* empty space check */) { clist_free(steps); return nil; }
 		clist_insert(&steps, p_x, p_y);
 	}
 	return steps;
 }
 - (void)moveInDirection:(NSUInteger)direction
 {
-	NSUInteger p_x = player_x, p_y = player_y, p_i, l_val, moves_made = 0;
+	NSUInteger p_x = player_info.x, p_y = player_info.y, p_i, l_val, moves_made = 0;
 	NSInteger slope_x = 0, slope_y = 0;
 	if (direction & kDIR_N) --slope_y; // up
 	if (direction & kDIR_S) ++slope_y; // down
 	if (direction & kDIR_W) --slope_x; // left
 	if (direction & kDIR_E) ++slope_x; // right
-	l_val = map[player_x + slope_x][player_y + slope_y];
+	l_val = map[player_info.x + slope_x][player_info.y + slope_y];
 	for (p_i = 0, p_x += slope_x, p_y += slope_y; p_i < l_val; ++p_i, p_x += slope_x, p_y += slope_y) // move loop
 	{
 		map[p_x][p_y] = 0; // clear gridpoint
-		player_x += slope_x; player_y += slope_y; // move player
-		++player_level_cleared;
+		player_info.x += slope_x; player_info.y += slope_y; // move player
+		++player_info.cleared;
 		++moves_made;
 	}
-	if (moves_made > 1)	player_points += moves_made;				 // standard points
-	if (moves_made > 5)	player_points += [self score];	 		 // moderate bonus for 5,6,7
-	if (moves_made > 7)	player_points += [self score] * player_level; // huge bonus for 8 & 9 items
-	++player_moves;
+	if (moves_made > 1)	player_info.points += moves_made;				 		// standard points
+	if (moves_made > 5)	player_info.points += [self score];	 		 		// moderate bonus for 5,6,7
+	if (moves_made > 7)	player_info.points += [self score] * player_info.level;	// huge bonus for 8 & 9 items
+	++player_info.moves;
 	[self hardenLevel];
 }
 - (void)levelUpMap
 {
-	NSUInteger i, rm_x, rm_y, removeItems = rand() % player_level * (gamePrefs.difficulty + 1) + 1;
+	NSUInteger i, rm_x, rm_y, removeItems = rand() % player_info.level * (gamePrefs.difficulty + 1) + 1;
 	for (i = 0; i < removeItems; ++i)
 	{
-		do { rm_x = rand() % XSIZE; rm_y = rand() % YSIZE; }
-		while (rm_x == player_x && rm_y == player_y);
+		do { rm_x = rand() % XSIZE; rm_y = rand() % YSIZE; } while (rm_x == player_info.x && rm_y == player_info.y);
 		map[rm_x][rm_y] = 0;
-		++player_level_removed;
+		++player_info.removed;
 	}
 }
 - (void)hardenLevel
@@ -313,30 +298,23 @@ struct clist_node *harden; // list of hardened coords
 	NSUInteger minMoves, squares, i, x, y;
 	if (gamePrefs.difficulty == 0) return; // easy mode is easy
 	minMoves = gamePrefs.difficulty == 2 ? 10 /* hard mode */ : 35 /* normal mode */;
-	squares = (gamePrefs.difficulty - 1) * player_level; // each level gets harder, level 1 doesn't get hardened
-	if (player_moves <= minMoves || player_moves % 3 != 0) return; // don't harden if player hasnt moved enough, only harden every third move
+	squares = (gamePrefs.difficulty - 1) * player_info.level; // each level gets harder, level 1 doesn't get hardened
+	if (player_info.moves <= minMoves || player_info.moves % 3 != 0) return; // don't harden if player hasnt moved enough, only harden every third move
 	for (i = 0; i < squares; ++i)
 	{
 		do { x = rand() % XSIZE; y = rand() % YSIZE; } while (map[x][y] == 0 || map[x][y] == 9 || (x == 0 && y == 0)); // don't modify crossed squares, and don't wrap them over, don't touch (0,0)
-		++map[x][y]; // increment the square
-		clist_insert(&harden, x, y); // push the number onto the list
+		++map[x][y]; clist_insert(&harden, x, y); // increment the square and push the number onto the list
 	}
 }
 - (void)generateMap
 {
 	NSUInteger x, y, i_level;
-	for (x = 0; x < XSIZE; ++x)
-		for (y = 0; y < YSIZE; ++y)
-			map[x][y] = rand() % 9 + 1;
-	player_level_removed = 0;
-	player_level_cleared = 0;
-	player_x = rand() % XSIZE;
-	player_y = rand() % YSIZE;
-	map[player_x][player_y] = 0;
-	player_moves = 0;
-	for (i_level = 0; i_level < player_level; ++i_level) [self levelUpMap];
+	for (x = 0; x < XSIZE; ++x) for (y = 0; y < YSIZE; ++y) map[x][y] = rand() % 9 + 1; // nested loop, randomly generate map
+	player_info.removed = player_info.cleared = player_info.moves = 0; // init player data
+	player_info.x = rand() % XSIZE; player_info.y = rand() % YSIZE; map[player_info.x][player_info.y] = 0;// get player position and set it to empty space
+	for (i_level = 0; i_level < player_info.level; ++i_level) [self levelUpMap]; // do any difficulty upgrades if needed
 }
-- (float)score { return ((float)player_level_cleared / (float)(XSIZE * YSIZE - player_level_removed)) * 100.0; }
+- (float)score { return ((float)player_info.cleared / (float)(XSIZE * YSIZE - player_info.removed)) * 100.0; }
 - (void)disableGame
 {
 	[[self button_levelUp] setTitle:@"X" forState:UIControlStateNormal];
@@ -370,73 +348,71 @@ struct clist_node *harden; // list of hardened coords
 - (IBAction)userMove:(id)sender
 {
 	[[self button_endGame] setBackgroundColor:[UIColor whiteColor]];
-	if (Level_Reset)
+	if (game_info.enable)
 	{
-		Level_Reset = NO;
+		game_info.enable = NO;
 		[[self button_levelUp] setBackgroundColor:[UIColor greenColor]];
 		[[self button_restart] setBackgroundColor:[UIColor whiteColor]];
 		[[self button_endGame] setBackgroundColor:[UIColor whiteColor]];
 	}
-	if ([self canMoveInDirection:[sender tag] fromX:player_x fromY:player_y])
-		[self moveInDirection:[sender tag]];
+	if ([self canMoveInDirection:[sender tag] fromX:player_info.x fromY:player_info.y]) [self moveInDirection:[sender tag]]; // if we can, do it
 	[self display];
 }
 - (IBAction)userRestart:(id)sender
 {
-	if (!Level_Reset) [[self button_restart] setBackgroundColor:[UIColor redColor]];
-	if (Level_Reset)
+	if (!game_info.enable) [[self button_restart] setBackgroundColor:[UIColor redColor]];
+	if (game_info.enable)
 	{
-		gameOver = NO;
-		Level_Reset = NO;
-		highlightPaths = NO;
-		player_level = 0;
-		player_points = 0;
+		game_info.gameOver = NO;
+		game_info.enable = NO;
+		game_info.paths = NO;
+		player_info.level = 0;
+		player_info.points = 0;
 		[[self segment_possibleMoves] setSelectedSegmentIndex:0];
 		[[self button_restart] setBackgroundColor:[UIColor whiteColor]];
 		[self enableGame];
 		[self generateMap];
 		[self display];
 	}
-	else Level_Reset = YES;
+	else game_info.enable = YES;
 }
 - (IBAction)userEndGame:(id)sender
 {
 	[[self button_endGame] setBackgroundColor:[UIColor redColor]];
-	if (Level_Reset) [self performSegueWithIdentifier:@"endGame" sender:self];
-	else Level_Reset = YES;
+	if (game_info.enable) [self performSegueWithIdentifier:@"endGame" sender:self];
+	else game_info.enable = YES;
 }
 - (IBAction)userCheat:(id)sender
 {
-	if ([sender selectedSegmentIndex] == 0) highlightPaths = NO;
-	else								highlightPaths = YES;
+	if ([sender selectedSegmentIndex] == 0) game_info.paths = NO;
+	else								game_info.paths = YES;
 	[self display];
 }
 - (IBAction)userLevelUp:(id)sender
 {
-	if (!gameOver) // next level
+	if (!game_info.gameOver) // next level
 	{
 		[[self button_levelUp] setBackgroundColor:[UIColor blueColor]];
-		if (Level_Reset)
+		if (game_info.enable)
 		{
-			++player_level;
+			++player_info.level;
 			[self generateMap];
 			[self enableGame];
 			[self display];
-			Level_Reset = NO;
+			game_info.enable = NO;
 		}
-		else Level_Reset = YES;
+		else game_info.enable = YES;
 	}
 	else [self enterScore]; // high scores
 }
 - (void)enterScore
 {
 	FILE *fp __block;
-	NSString *score = [[NSString alloc] initWithFormat:@"LVL %lu/%.2f%%/%lupt", (unsigned long)player_level + 1, [self score], (unsigned long)player_points];
+	NSString *score = [[NSString alloc] initWithFormat:@"LVL %lu/%.2f%%/%lupt", (unsigned long)player_info.level + 1, [self score], (unsigned long)player_info.points];
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *documentsDirectory = [paths objectAtIndex:0];
 	NSString *scoresFile = [documentsDirectory stringByAppendingPathComponent:@"/scores.txt"];
-	UIAlertController * alertController = [UIAlertController alertControllerWithTitle: @"Game Over!"
-									message: score preferredStyle:UIAlertControllerStyleAlert];
+	UIAlertController * alertController = [UIAlertController alertControllerWithTitle: @"Game Over!" message: score preferredStyle:UIAlertControllerStyleAlert];
 	[alertController addTextFieldWithConfigurationHandler:^(UITextField *textField)
 	{
 		textField.placeholder = @"name";
@@ -452,10 +428,7 @@ struct clist_node *harden; // list of hardened coords
 		{
 			if ((fp = fopen([scoresFile UTF8String], "a")) != NULL)
 			{
-				fprintf(fp, "%s\n%lu/%.2f/%lu\n", [[namefield text] UTF8String],
-					   (unsigned long)player_level + 1, [self score], (unsigned long)player_points);
-				fflush(fp);
-				fclose(fp);
+				fprintf(fp, "%s\n%lu/%.2f/%lu\n", [[namefield text] UTF8String], (unsigned long)player_info.level + 1, [self score], (unsigned long)player_info.points); fclose(fp); // write save record and close file
 				[self userRestart:nil];
 				[self performSegueWithIdentifier:@"showScores" sender:self]; // show scores screen
 				return;
@@ -465,15 +438,5 @@ struct clist_node *harden; // list of hardened coords
 	}]];
 	[self presentViewController:alertController animated:YES completion:nil];
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end
