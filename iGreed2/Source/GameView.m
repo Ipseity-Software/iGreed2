@@ -15,6 +15,9 @@ NSUInteger XSIZE;
 NSUInteger YSIZE;
 struct preference gamePrefs;
 
+typedef unsigned int *p_ui;
+typedef unsigned int ui;
+
 @interface GameView ()
 @property (weak, nonatomic) IBOutlet UITextView *textView_gameBoard;
 @property (weak, nonatomic) IBOutlet UIButton *button_moveW;
@@ -103,8 +106,8 @@ struct clist_node *harden; // list of hardened coords
 	[[self label_level] setText:[[NSString alloc] initWithFormat:@"lvl %lu", (unsigned long)player_info.level + 1]];
 	harden_count = clist_count(harden);
 	for (harden_i = 0; harden_i < harden_count; ++harden_i) // loop over hardened vals and make them black/white so they're easy to spot
-	{ string = [self highlightBackground:string atX:clist_get(harden, harden_i)->coord_x atY:clist_get(harden, harden_i)->coord_y withColor:[UIColor whiteColor]];
-	  string = [self highlightCharacter: string atX:clist_get(harden, harden_i)->coord_x atY:clist_get(harden, harden_i)->coord_y withColor:[UIColor blackColor]]; }
+	{ string = [self highlightBackground:string atX:(ui)clist_get(harden, harden_i)->coord_x atY:(ui)clist_get(harden, harden_i)->coord_y withColor:[UIColor whiteColor]];
+	  string = [self highlightCharacter: string atX:(ui)clist_get(harden, harden_i)->coord_x atY:(ui)clist_get(harden, harden_i)->coord_y withColor:[UIColor blackColor]]; }
 	harden = clist_free(harden); // wipe it out so it only shows for 1 move
 	if ([self score] > WINPERCENT) [[self button_levelUp] setHidden:NO]; // player can level up
 	else if (game_info.gameOver) [self disableGame];
@@ -181,35 +184,35 @@ struct clist_node *harden; // list of hardened coords
 	if (increment >= gamePrefs.moves) return string;
 	color = [self getColorForIncrement:increment];
 	if ((list = [self trackMoveInDirection:kDIR_N fromX:x fromY:y]) != NULL) foundMove = YES;			// up
-	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
+	if (list) string = [self highlightPossibleMoves:string fromX:(ui)[self destFromList:list]->coord_x fromY:(ui)[self destFromList:list]->coord_x withIncrement:increment + 1];
 	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
 	if ((list = [self trackMoveInDirection:kDIR_W fromX:x fromY:y]) != NULL) foundMove = YES;			// left
-	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
+	if (list) string = [self highlightPossibleMoves:string fromX:(ui)[self destFromList:list]->coord_x fromY:(ui)[self destFromList:list]->coord_x withIncrement:increment + 1];
 	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
 	if ((list = [self trackMoveInDirection:kDIR_S fromX:x fromY:y]) != NULL) foundMove = YES;			// down
-	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
+	if (list) string = [self highlightPossibleMoves:string fromX:(ui)[self destFromList:list]->coord_x fromY:(ui)[self destFromList:list]->coord_x withIncrement:increment + 1];
 	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
 	if ((list = [self trackMoveInDirection:kDIR_E fromX:x fromY:y]) != NULL) foundMove = YES;			// right
-	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
+	if (list) string = [self highlightPossibleMoves:string fromX:(ui)[self destFromList:list]->coord_x fromY:(ui)[self destFromList:list]->coord_x withIncrement:increment + 1];
 	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
 	if ((list = [self trackMoveInDirection:kDIR_N | kDIR_W fromX:x fromY:y]) != NULL) foundMove = YES;	// up left
-	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
+	if (list) string = [self highlightPossibleMoves:string fromX:(ui)[self destFromList:list]->coord_x fromY:(ui)[self destFromList:list]->coord_x withIncrement:increment + 1];
 	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
 	if ((list = [self trackMoveInDirection:kDIR_N | kDIR_E fromX:x fromY:y]) != NULL) foundMove = YES;	// up right
-	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
+	if (list) string = [self highlightPossibleMoves:string fromX:(ui)[self destFromList:list]->coord_x fromY:(ui)[self destFromList:list]->coord_x withIncrement:increment + 1];
 	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
 	if ((list = [self trackMoveInDirection:kDIR_S | kDIR_W fromX:x fromY:y]) != NULL) foundMove = YES;	// down left
-	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
+	if (list) string = [self highlightPossibleMoves:string fromX:(ui)[self destFromList:list]->coord_x fromY:(ui)[self destFromList:list]->coord_x withIncrement:increment + 1];
 	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
 	if ((list = [self trackMoveInDirection:kDIR_S | kDIR_E fromX:x fromY:y]) != NULL) foundMove = YES;	// down right
-	if (list) string = [self highlightPossibleMoves:string fromX:[self destFromList:list]->coord_x fromY:[self destFromList:list]->coord_x withIncrement:increment + 1];
+	if (list) string = [self highlightPossibleMoves:string fromX:(ui)[self destFromList:list]->coord_x fromY:(ui)[self destFromList:list]->coord_x withIncrement:increment + 1];
 	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
 	if (!foundMove && [self score] <= WINPERCENT && increment == 0) game_info.gameOver = YES; // no moves left (including a level up)

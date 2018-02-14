@@ -23,6 +23,8 @@ struct load_entry
 @implementation ScoresView
 NSArray *tableNames;
 NSArray *tableData;
+typedef unsigned long *p_lu;
+typedef unsigned long lu;
 
 void load_swap(struct load_entry **l, NSUInteger x, NSUInteger y)
 {
@@ -46,7 +48,7 @@ void load_sort(struct load_entry **l, NSUInteger size)
 	{ printf("File not exist\n"); return 0; }
 	// read over the file to determine data entries
 	while (fscanf(fp, "%[^\n]\n", fentry.name) != EOF)
-	{ fscanf(fp, "%lu/%f/%lu\n", &fentry.level, &fentry.percent, &fentry.score); ++load_count; }
+	{ fscanf(fp, "%lu/%f/%lu\n", (p_lu)&fentry.level, &fentry.percent, (p_lu)&fentry.score); ++load_count; }
 	fseek(fp, 0L, SEEK_SET);
 	// read the file twice, this time store the data
 	list_fentry = malloc(sizeof(struct load_entry *) * load_count);
@@ -54,7 +56,7 @@ void load_sort(struct load_entry **l, NSUInteger size)
 	{
 		list_fentry[load_i] = malloc(sizeof(struct load_entry));
 		fscanf(fp, "%[^\n]\n", list_fentry[load_i]->name);
-		fscanf(fp, "%lu/%f/%lu\n", &list_fentry[load_i]->level, &list_fentry[load_i]->percent, &list_fentry[load_i]->score);
+		fscanf(fp, "%lu/%f/%lu\n", (p_lu)&list_fentry[load_i]->level, &list_fentry[load_i]->percent, (p_lu)&list_fentry[load_i]->score);
 	}
 	fclose(fp);
 	// done reading it, now time to sort and set up the arrays
@@ -82,7 +84,7 @@ void load_sort(struct load_entry **l, NSUInteger size)
 	{ printf("File not exist\n"); return; }
 	// read over the file to determine data entries
 	while (fscanf(fp, "%[^\n]\n", fentry.name) != EOF)
-	{ fscanf(fp, "%lu/%f/%lu\n", &fentry.level, &fentry.percent, &fentry.score); ++load_count; }
+	{ fscanf(fp, "%lu/%f/%lu\n", (p_lu)&fentry.level, &fentry.percent, (p_lu)&fentry.score); ++load_count; }
 	fseek(fp, 0L, SEEK_SET);
 	// read the file twice, this time store the data
 	list_fentry = malloc(sizeof(struct load_entry *) * load_count);
@@ -90,7 +92,7 @@ void load_sort(struct load_entry **l, NSUInteger size)
 	{
 		list_fentry[load_i] = malloc(sizeof(struct load_entry));
 		fscanf(fp, "%[^\n]\n", list_fentry[load_i]->name);
-		fscanf(fp, "%lu/%f/%lu\n", &list_fentry[load_i]->level, &list_fentry[load_i]->percent, &list_fentry[load_i]->score);
+		fscanf(fp, "%lu/%f/%lu\n", (p_lu)&list_fentry[load_i]->level, &list_fentry[load_i]->percent, (p_lu)&list_fentry[load_i]->score);
 	}
 	fclose(fp);
 	// done reading it, now time to sort and set up the arrays
@@ -98,7 +100,7 @@ void load_sort(struct load_entry **l, NSUInteger size)
 	for (load_i = 0; load_i < (load_count > 25 ? 25 : load_count); ++load_i)
 	{
 		[load_name addObject:[[NSString alloc] initWithUTF8String:list_fentry[load_i]->name]];
-		[load_data addObject:[[NSString alloc] initWithFormat:@"LVL %lu | %.0f%% | %lu PT", list_fentry[load_i]->level, round(list_fentry[load_i]->percent), list_fentry[load_i]->score]];
+		[load_data addObject:[[NSString alloc] initWithFormat:@"LVL %lu | %.0f%% | %lu PT", (lu)list_fentry[load_i]->level, round(list_fentry[load_i]->percent), (lu)list_fentry[load_i]->score]];
 	}
 	tableNames = load_name; tableData = load_data; // set the tables
 	// clean up

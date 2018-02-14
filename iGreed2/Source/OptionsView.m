@@ -102,6 +102,10 @@ struct preference prefs;
 - (void)viewDidLoad
 {
 	prefs = [OptionsView loadPrefs];
+	[[self segment_move1] setEnabled:NO]; // broken
+	[[self segment_move2] setEnabled:NO]; // broken
+	[[self segment_move3] setEnabled:NO]; // broken
+	[[self slider_moves ] setEnabled:NO]; // broken
 	[self updateUI:nil];
 	[[self button_save] setHidden:YES];
 	[super viewDidLoad];
