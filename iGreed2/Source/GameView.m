@@ -79,6 +79,7 @@ struct clist_node *harden; // list of hardened coords
 	[[self textView_gameBoard] setBackgroundColor:[UIColor blackColor]];
 	[self userRestart:nil];
 	[self display];
+	;
 }
 - (void)didReceiveMemoryWarning { [super didReceiveMemoryWarning]; }
 - (void)display

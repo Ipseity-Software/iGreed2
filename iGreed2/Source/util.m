@@ -38,14 +38,14 @@ struct gameUI_device gUIDevice_X =
 
 struct gameUI_device gUIDevice_EightPlus =
 {	/*x		y		width	height 	// item	*/
-	{ 0,		20,		414,		385 },	// map
+	{ 0,		20,		414,		393 },	// map
 	{ 20,	429,		50,		30  },	// restart
 	{ 169,	430,		76,		29  },	// cheat
 	{ 325,	429, 	71,		30  },	// endgame
 	{ 11,	695,		68,		21  },	// score
 	{ 173,	695,		68,		21  },	// points
 	{ 326,	695,		68,		21  },	// level
-	{ 105,	447,		68,		68 }		// keypadBase
+	{ 105,	477,		68,		68 }		// keypadBase
 };
 
 struct gameUI_device gUIDevice_Eight =

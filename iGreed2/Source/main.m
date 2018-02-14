@@ -40,7 +40,7 @@ void setSizes()
 	if ((!strcmp(Id, "iPhone10,2") || !strcmp(Id, "iPhone10,5")) || //8 Plus
 	    (!strcmp(Id, "iPhone7,1") /* 6P */ || !strcmp(Id, "iPhone8,2") /* 6SP */) ||
 	    (!strcmp(Id, "iPhone9,2") || !strcmp(Id, "iPhone9,4"))) // 7 Plus
-	{ gUIDeviceType = kDEV_8P; XSIZE += 13; YSIZE += 8; }
+	{ gUIDeviceType = kDEV_8P; XSIZE += 13; YSIZE += 4; }
 	if (!strcmp(Id, "iPhone10,3") || !strcmp(Id, "iPhone10,6")) //X
 	{ gUIDeviceType = kDEV_X;  XSIZE += 8; YSIZE += 14; }
 	map = malloc(sizeof(char *) * XSIZE);
