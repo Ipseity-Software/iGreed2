@@ -26,7 +26,7 @@ struct gameUI_device gUIDevice_SE =
 
 struct gameUI_device gUIDevice_X =
 {	/*x		y		width	height 	// item	*/
-	{ 0,		33,		375,		440 },	// map
+	{ 0,		33,		375,		430 },	// map
 	{ 16,	481,		50,		30  },	// restart
 	{ 149,	483,		76,		29  },	// cheat
 	{ 288,	480, 	71,		30  },	// endgame
