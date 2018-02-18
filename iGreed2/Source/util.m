@@ -97,6 +97,36 @@ struct clist_node *clist_free(struct clist_node *list)
 	free(list);
 	return NULL;
 }
+void llist_insert(struct llist_node **list, void *data)
+{
+	struct llist_node *node;
+	struct llist_node *position;
+	node = malloc(sizeof(struct llist_node));
+	node->data = data;
+	node->next = NULL;
+	if (*list == NULL) // empty list
+		*list = node;
+	else
+	{
+		for (position = *list; position->next != NULL; position = position->next);
+		position->next = node;
+	}
+}
+struct llist_node *llist_free(struct llist_node *list)
+{
+	if (list == NULL) return NULL;
+	list->next = llist_free(list->next);
+	free(list->data);
+	free(list);
+	return NULL;
+}
+NSUInteger llist_count(struct llist_node *list)
+{
+	struct llist_node *ptr;
+	NSUInteger i;
+	for (i = 0, ptr = list; ptr != NULL; ++i, ptr = ptr->next);
+	return i;
+}
 struct gameUI_item gUIGetButton(uint32_t direction)
 {
 	struct gameUI_item ret;

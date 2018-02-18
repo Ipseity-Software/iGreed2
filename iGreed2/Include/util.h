@@ -52,10 +52,19 @@ struct clist_node
 	struct clist_node *next;
 };
 
+struct llist_node
+{
+	void *data;
+	struct llist_node *next;
+};
+
 void clist_insert(struct clist_node ** list, uint64_t coord_x, uint64_t coord_y);
 struct clist_node *clist_get(struct clist_node *list, NSUInteger position);
 struct clist_node *clist_free(struct clist_node *list);
 NSUInteger clist_count(struct clist_node *list);
+void llist_insert(struct llist_node **list, void *data);
+struct llist_node *llist_free(struct llist_node *list);
+NSUInteger llist_count(struct llist_node *list);
 struct gameUI_item gUIGetButton(uint32_t direction);
 
 #endif /* UTIL_H */

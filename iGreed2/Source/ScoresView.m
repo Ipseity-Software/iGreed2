@@ -7,116 +7,137 @@
 //
 
 #import "ScoresView.h"
-
-struct load_entry
-{
-	char		 name[16];
-	NSUInteger level,
-			 score;
-	float	 percent;
-};
+#import "ScoreDetailsView.h"
+#import "util.h"
 
 @interface ScoresView ()
 @property (weak, nonatomic) IBOutlet UITableView *table_scores;
 @end
 
 @implementation ScoresView
-NSArray *tableNames;
-NSArray *tableData;
-typedef unsigned long *p_lu;
-typedef unsigned long lu;
+struct score_entry tableScores[25];
+NSUInteger selectedScore, scoreCount;
 
-void load_swap(struct load_entry **l, NSUInteger x, NSUInteger y)
+void score_swap(struct score_entry *l, NSUInteger x, NSUInteger y)
 {
-	struct load_entry *tmp = l[x];
-	l[x] = l[y];
-	l[y] = tmp;
+	struct score_entry tmp;
+	memcpy(&tmp, &l[x], sizeof(struct score_entry));
+	memcpy(&l[x], &l[y], sizeof(struct score_entry));
+	memcpy(&l[y], &tmp, sizeof(struct score_entry));
 }
-void load_sort(struct load_entry **l, NSUInteger size)
-{ NSUInteger i, j;
-  for (i = 0; i < size - 1; ++i) for (j = 0; j < size - i - 1; ++j) if (l[j]->score < l[j + 1]->score) load_swap(l, j, j + 1); /* simple bubble sort */ }
-+ (NSUInteger)highestScore
+void score_sort(struct score_entry *l, NSUInteger size) { NSUInteger i, j; for (i = 0; i < size - 1 && size != 0; ++i) for (j = 0; j < size - i - 1; ++j) if (l[j].score < l[j + 1].score) score_swap(l, j, j + 1); /* simple bubble sort */ }
++ (const char *)scoreFile
 {
-	FILE *fp;
-	struct load_entry fentry;
-	struct load_entry **list_fentry;
-	NSUInteger load_count = 0, load_i, highest = 0;
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *documentsDirectory = [paths objectAtIndex:0];
-	NSString *scoresFile = [documentsDirectory stringByAppendingPathComponent:@"/scores.txt"];
-	if ((fp = fopen([scoresFile UTF8String], "r")) == NULL) // failed to open file
-	{ printf("File not exist\n"); return 0; }
-	// read over the file to determine data entries
-	while (fscanf(fp, "%[^\n]\n", fentry.name) != EOF)
-	{ fscanf(fp, "%lu/%f/%lu\n", (p_lu)&fentry.level, &fentry.percent, (p_lu)&fentry.score); ++load_count; }
-	fseek(fp, 0L, SEEK_SET);
-	// read the file twice, this time store the data
-	list_fentry = malloc(sizeof(struct load_entry *) * load_count);
-	for (load_i = 0; load_i < load_count; ++load_i)
-	{
-		list_fentry[load_i] = malloc(sizeof(struct load_entry));
-		fscanf(fp, "%[^\n]\n", list_fentry[load_i]->name);
-		fscanf(fp, "%lu/%f/%lu\n", (p_lu)&list_fentry[load_i]->level, &list_fentry[load_i]->percent, (p_lu)&list_fentry[load_i]->score);
-	}
+	return [[documentsDirectory stringByAppendingPathComponent:@"/scores.db"] UTF8String];
+}
++ (void)writeScore:(struct score_entry *)score
+{
+	FILE *fp;
+	NSUInteger version = 0;
+	[ScoresView upgradeScoresFile]; // upgrade it so we don't wind up with corruption
+	if (access([ScoresView scoreFile], F_OK) == -1) version = SCORE_VERSION;
+	fp = fopen([ScoresView scoreFile], "a+b");
+	if (version) fwrite(&version, sizeof(NSUInteger), 1, fp); // if this is the first score, write the version number first
+	fwrite(score, sizeof(struct score_entry), 1, fp);
+	fflush(fp);
 	fclose(fp);
-	// done reading it, now time to sort and set up the arrays
-	load_sort(list_fentry, load_count);
-	if (load_count > 0) highest = list_fentry[0]->score;
-	// clean up
-	for (load_i = 0; load_i < load_count; ++load_i) free(list_fentry[load_i]);
-	free(list_fentry);
+	printf("Score written\n");
+}
++ (void)upgradeScoresFile
+{
+	FILE *fp;
+	NSUInteger version;
+	if ((fp = fopen([ScoresView scoreFile], "rb")) == NULL) return;
+	fread(&version, sizeof(NSUInteger), 1, fp);
+	// conversion would go here
+}
++ (NSUInteger)highestScore
+{
+	NSUInteger highest;
+	struct llist_node *list, *ptr;
+	struct score_entry *scores;
+	NSUInteger count, i;
+	[ScoresView upgradeScoresFile]; // make sure it's up to date
+	list = [ScoresView loadScores_v1]; // this needs to be updated when a new scorefile version is made
+	count = llist_count(list);
+	scores = malloc(sizeof(struct score_entry) * count);
+	for (i = 0, ptr = list; i < count; ++i, ptr = ptr->next) memcpy(&scores[i], ptr->data, sizeof(struct score_entry)); // copy it into the structure
+	score_sort(scores, count);
+	highest = scores[0].score;
+	free(scores);
+	list = llist_free(list);
 	return highest;
+}
++ (struct llist_node *)loadScores_v1
+{
+	FILE *fp;
+	struct llist_node *list;
+	struct score_entry_v1 read, *write; // we use the v1 structure here directly
+	NSUInteger version;
+	list = NULL;
+	if ((fp = fopen([ScoresView scoreFile], "rb")) != NULL)
+	{
+		fread(&version, sizeof(NSUInteger), 1, fp); // read out the version number. We don't need it though
+		while (fread(&read, sizeof(struct score_entry_v1), 1, fp) != 0)
+		{
+			write = malloc(sizeof(struct score_entry_v1));
+			memcpy(write, &read, sizeof(struct score_entry_v1)); // copy the data over
+			llist_insert(&list, write); // add it to the list
+		}
+		fclose(fp);
+	}
+	return list;
+}
+- (void)loadScores
+{
+	struct llist_node *list, *ptr;
+	struct score_entry *scores;
+	NSUInteger count, i;
+	[ScoresView upgradeScoresFile]; // make sure it's up to date
+	list = [ScoresView loadScores_v1]; // this needs to be updated when a new scorefile version is made
+	count = llist_count(list); scoreCount = (count > 25 ? 25 : count);
+	scores = malloc(sizeof(struct score_entry) * count);
+	for (i = 0, ptr = list; i < count; ++i, ptr = ptr->next) memcpy(&scores[i], ptr->data, sizeof(struct score_entry)); // copy it into the structure
+	score_sort(scores, count);
+	memset(tableScores, 0, sizeof(struct score_entry) * 25); // zero the whole structure
+	for (i = 0; i < scoreCount; ++i) memcpy(&tableScores[i], &scores[i], sizeof(struct score_entry)); // copy it to the final structure
+	free(scores);
+	list = llist_free(list);
 }
 - (void)viewDidLoad
 {
-	FILE *fp;
-	struct load_entry fentry;
-	struct load_entry **list_fentry;
-	NSUInteger load_count = 0, load_i;
-	NSMutableArray *load_name = [[NSMutableArray alloc] init];
-	NSMutableArray *load_data = [[NSMutableArray alloc] init];
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *documentsDirectory = [paths objectAtIndex:0];
-	NSString *scoresFile = [documentsDirectory stringByAppendingPathComponent:@"/scores.txt"];
-	[[self table_scores] setDelegate: self];
-	[[self table_scores] setDataSource: self];
-	if ((fp = fopen([scoresFile UTF8String], "r")) == NULL) // failed to open file
-	{ printf("File not exist\n"); return; }
-	// read over the file to determine data entries
-	while (fscanf(fp, "%[^\n]\n", fentry.name) != EOF)
-	{ fscanf(fp, "%lu/%f/%lu\n", (p_lu)&fentry.level, &fentry.percent, (p_lu)&fentry.score); ++load_count; }
-	fseek(fp, 0L, SEEK_SET);
-	// read the file twice, this time store the data
-	list_fentry = malloc(sizeof(struct load_entry *) * load_count);
-	for (load_i = 0; load_i < load_count; ++load_i)
-	{
-		list_fentry[load_i] = malloc(sizeof(struct load_entry));
-		fscanf(fp, "%[^\n]\n", list_fentry[load_i]->name);
-		fscanf(fp, "%lu/%f/%lu\n", (p_lu)&list_fentry[load_i]->level, &list_fentry[load_i]->percent, (p_lu)&list_fentry[load_i]->score);
-	}
-	fclose(fp);
-	// done reading it, now time to sort and set up the arrays
-	load_sort(list_fentry, load_count);
-	for (load_i = 0; load_i < (load_count > 25 ? 25 : load_count); ++load_i)
-	{
-		[load_name addObject:[[NSString alloc] initWithUTF8String:list_fentry[load_i]->name]];
-		[load_data addObject:[[NSString alloc] initWithFormat:@"LVL %lu | %.0f%% | %lu PT", (lu)list_fentry[load_i]->level, round(list_fentry[load_i]->percent), (lu)list_fentry[load_i]->score]];
-	}
-	tableNames = load_name; tableData = load_data; // set the tables
-	// clean up
-	for (load_i = 0; load_i < load_count; ++load_i) free(list_fentry[load_i]);
-	free(list_fentry);
+	[[self table_scores] setDataSource:self];
+	[[self table_scores] setDelegate:self];
+	[self loadScores];
 	[super viewDidLoad];
 }
 - (void)didReceiveMemoryWarning { [super didReceiveMemoryWarning]; }
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section { return [tableData count]; }
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section { return scoreCount; }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+	struct score_entry score = tableScores[[indexPath row]];
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"itemId"];
 	if (cell == nil) cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"itemId"];
-	cell.textLabel.text = [tableNames objectAtIndex:indexPath.row];
-	cell.detailTextLabel.text = [tableData objectAtIndex:indexPath.row];
+	[cell setBackgroundColor:[indexPath row] % 2 ? [UIColor lightGrayColor] : [UIColor whiteColor]];
+	[[cell textLabel] setText:[[NSString alloc] initWithUTF8String:(const char *)score.name]];
+	[[cell detailTextLabel] setText:[[NSString alloc] initWithFormat:@"LVL %u | %u%% | %u PT", score.level, score.percent, score.score]];
 	return cell;
 }
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	selectedScore = [indexPath row];
+	[self performSegueWithIdentifier:@"showScoreDetails" sender:self];
+}
 - (IBAction)button_GoBack_upin:(id)sender { [self performSegueWithIdentifier:@"returnToEntry" sender:self]; }
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+	ScoreDetailsView *detailsView;
+	if (!strcmp([[segue identifier] UTF8String], "showScoreDetails"))
+	{
+		detailsView = [segue destinationViewController];
+		detailsView.score = tableScores[selectedScore];
+	}
+}
 @end

@@ -44,6 +44,9 @@ struct { NSUInteger x, y, level, points, moves, highscore, cleared, removed; } p
 struct { BOOL paths, gameOver, enable; } game_info = { NO, NO, YES };
 struct gameUI_device gUIDeviceDetails; // used to set up UI objects
 struct clist_node *harden; // list of hardened coords
+struct score_entry score;
+time_t levelStartTime;
+BOOL savedAverages;
 
 - (void)viewWillAppear:(BOOL)animated // sets up game pad, map, and other UI items
 {
@@ -71,15 +74,10 @@ struct clist_node *harden; // list of hardened coords
 {
 	gamePrefs = [OptionsView loadPrefs];
 	player_info.highscore = [ScoresView highestScore];
-	if (gamePrefs.seed == 0)
-		srand((unsigned int)time(0));
-	else
-		srand(gamePrefs.seed);
 	[super viewDidLoad];
 	[[self textView_gameBoard] setBackgroundColor:[UIColor blackColor]];
 	[self userRestart:nil];
 	[self display];
-	;
 }
 - (void)didReceiveMemoryWarning { [super didReceiveMemoryWarning]; }
 - (void)display
@@ -155,6 +153,15 @@ struct clist_node *harden; // list of hardened coords
 	}
 	return string;
 }
+- (void)saveAverages
+{
+	if (!savedAverages)
+	{
+		score.average_time += time(0) - levelStartTime;
+		score.average_percent += roundf([self score]);
+		savedAverages = YES;
+	}
+}
 - (struct clist_node *)destFromList:(struct clist_node *)list
 {
 	struct clist_node *ptr;
@@ -216,7 +223,7 @@ struct clist_node *harden; // list of hardened coords
 	if (list) string = [self highlightPossibleMoves:string fromX:(ui)[self destFromList:list]->coord_x fromY:(ui)[self destFromList:list]->coord_x withIncrement:increment + 1];
 	string = [self highlightString:string withCoordinateList:list withColor:color];
 	clist_free(list);
-	if (!foundMove && [self score] <= WINPERCENT && increment == 0) game_info.gameOver = YES; // no moves left (including a level up)
+	if (!foundMove && [self score] <= WINPERCENT && increment == 0) { [self saveAverages]; game_info.gameOver = YES; /* no moves left (including a level up) */ }
 	return string;
 }
 - (NSMutableAttributedString *)highlightString:(NSMutableAttributedString *)string withCoordinateList:(struct clist_node *)list withColor:(UIColor *)color
@@ -276,9 +283,11 @@ struct clist_node *harden; // list of hardened coords
 	l_val = map[player_info.x + slope_x][player_info.y + slope_y];
 	for (p_i = 0, p_x += slope_x, p_y += slope_y; p_i < l_val; ++p_i, p_x += slope_x, p_y += slope_y) // move loop
 	{
+		score.squares_value += map[p_x][p_y];
 		map[p_x][p_y] = 0; // clear gridpoint
 		player_info.x += slope_x; player_info.y += slope_y; // move player
 		++player_info.cleared;
+		++score.squares_cleared;
 		++moves_made;
 	}
 	if (moves_made > 1)	player_info.points += moves_made;				 		// standard points
@@ -317,6 +326,7 @@ struct clist_node *harden; // list of hardened coords
 	player_info.removed = player_info.cleared = player_info.moves = 0; // init player data
 	player_info.x = rand() % XSIZE; player_info.y = rand() % YSIZE; map[player_info.x][player_info.y] = 0;// get player position and set it to empty space
 	for (i_level = 0; i_level < player_info.level; ++i_level) [self levelUpMap]; // do any difficulty upgrades if needed
+	levelStartTime = 0; savedAverages = NO; // reset this so that we can actually track it
 }
 - (float)score { return ((float)player_info.cleared / (float)(XSIZE * YSIZE - player_info.removed)) * 100.0; }
 - (void)disableGame
@@ -351,6 +361,7 @@ struct clist_node *harden; // list of hardened coords
 }
 - (IBAction)userMove:(id)sender
 {
+	if (levelStartTime == 0) levelStartTime = time(0);
 	[[self button_endGame] setBackgroundColor:[UIColor whiteColor]];
 	if (game_info.enable)
 	{
@@ -372,6 +383,15 @@ struct clist_node *harden; // list of hardened coords
 		game_info.paths = NO;
 		player_info.level = 0;
 		player_info.points = 0;
+		/* set up high score structure */
+		score.seed = gamePrefs.seed == 0 ? time(0) : gamePrefs.seed;
+		srand(score.seed);
+		score.difficulty = gamePrefs.difficulty;
+		score.squares_cleared = score.squares_value = 0;
+		score.cheat_on = 0;
+		score.average_percent = 0;
+		score.average_time = 0;
+		/* do UI tasks */
 		[[self segment_possibleMoves] setSelectedSegmentIndex:0];
 		[[self button_restart] setBackgroundColor:[UIColor whiteColor]];
 		[self enableGame];
@@ -388,8 +408,8 @@ struct clist_node *harden; // list of hardened coords
 }
 - (IBAction)userCheat:(id)sender
 {
-	if ([sender selectedSegmentIndex] == 0) game_info.paths = NO;
-	else								game_info.paths = YES;
+	if ([sender selectedSegmentIndex] == 0) { game_info.paths = NO; }
+	else								{ game_info.paths = YES; score.cheat_on = 1; }
 	[self display];
 }
 - (IBAction)userLevelUp:(id)sender
@@ -399,6 +419,7 @@ struct clist_node *harden; // list of hardened coords
 		[[self button_levelUp] setBackgroundColor:[UIColor blueColor]];
 		if (game_info.enable)
 		{
+			[self saveAverages];
 			++player_info.level;
 			[self generateMap];
 			[self enableGame];
@@ -411,12 +432,8 @@ struct clist_node *harden; // list of hardened coords
 }
 - (void)enterScore
 {
-	FILE *fp __block;
-	NSString *score = [[NSString alloc] initWithFormat:@"LVL %lu/%.2f%%/%lupt", (unsigned long)player_info.level + 1, [self score], (unsigned long)player_info.points];
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *documentsDirectory = [paths objectAtIndex:0];
-	NSString *scoresFile = [documentsDirectory stringByAppendingPathComponent:@"/scores.txt"];
-	UIAlertController * alertController = [UIAlertController alertControllerWithTitle: @"Game Over!" message: score preferredStyle:UIAlertControllerStyleAlert];
+	NSString *scoreString = [[NSString alloc] initWithFormat:@"LVL %lu/%.2f%%/%lupt", (unsigned long)player_info.level + 1, [self score], (unsigned long)player_info.points];
+	UIAlertController * alertController = [UIAlertController alertControllerWithTitle: @"Game Over!" message: scoreString preferredStyle:UIAlertControllerStyleAlert];
 	[alertController addTextFieldWithConfigurationHandler:^(UITextField *textField)
 	{
 		textField.placeholder = @"name";
@@ -430,13 +447,18 @@ struct clist_node *harden; // list of hardened coords
 		UITextField * namefield = textfields[0];
 		if (!([[namefield text] length] < 1 || [[namefield text] length] > 15))
 		{
-			if ((fp = fopen([scoresFile UTF8String], "a")) != NULL)
-			{
-				fprintf(fp, "%s\n%lu/%.2f/%lu\n", [[namefield text] UTF8String], (unsigned long)player_info.level + 1, [self score], (unsigned long)player_info.points); fclose(fp); // write save record and close file
-				[self userRestart:nil];
-				[self performSegueWithIdentifier:@"showScores" sender:self]; // show scores screen
-				return;
-			}
+			strcpy((char *)score.name, [[namefield text] UTF8String]);
+			score.level = (player_info.level + 1);
+			score.percent = roundf([self score]);
+			score.score = player_info.points;
+			score.average_time /= score.level;
+			score.average_percent /= score.level;
+			score.date = time(0);
+			[ScoresView writeScore:&score];
+			usleep(250000); // wait 1/4 second
+			[self userRestart:nil];
+			[self performSegueWithIdentifier:@"showScores" sender:self]; // show scores screen
+			return;
 		}
 		printf("ERROR!\n");
 	}]];
